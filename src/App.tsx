@@ -163,7 +163,6 @@ export default function App() {
   const [handle, setHandle] = useState('');
   const [profile, setProfile] = useState<PassengerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [transitionSpeed, setTransitionSpeed] = useState(1);
   const ticketRef = useRef<HTMLDivElement>(null);
 
   const fetchProfile = async (username: string) => {
@@ -176,16 +175,6 @@ export default function App() {
 
   const startTransition = () => {
     setStep('transitioning');
-    const interval = setInterval(() => {
-      setTransitionSpeed(prev => {
-        if (prev >= 15) {
-          clearInterval(interval);
-          return 15;
-        }
-        return prev + 1;
-      });
-    }, 150);
-
     setTimeout(() => {
       setStep('revealed');
     }, 4000);
@@ -201,8 +190,6 @@ export default function App() {
     link.href = dataUrl;
     link.click();
   };
-
-  const isPortalActive = ['portal', 'login', 'confirmation', 'transitioning'].includes(step);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] selection:bg-[#BAFF00]/30 flex flex-col font-sans overflow-hidden">
