@@ -152,25 +152,51 @@ body {
   0% {
     transform: translate(-50%, -50%) translateZ(0) scale(0);
     opacity: 0;
-    border-width: 25px;
+    border-width: 0.25vw;
   }
   30% {
     opacity: 0.4;
-    border-width: 12px;
+    border-width: 0.12vw;
   }
   100% {
     transform: translate(-50%, -50%) translateZ(0) scale(15);
     opacity: 0;
-    border-width: 1px;
+    border-width: 0.01vw;
   }
 }
 
 .animate-ritual-ripple {
   animation: ritual-ripple 12s cubic-bezier(0.1, 0.1, 0.2, 1) infinite;
-  filter: blur(10px);
+  filter: blur(8px);
   backface-visibility: hidden;
-  box-shadow: inset 0 0 80px rgba(186, 255, 0, 0.2), 0 0 40px rgba(186, 255, 0, 0.1);
+  box-shadow: inset 0 0 80px rgba(186, 255, 0, 0.4);
   will-change: transform, opacity;
+}
+
+.ritual-video-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 1;
+  filter: saturate(1.8) hue-rotate(-150deg) brightness(1.3) contrast(1.1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ritual-enter-video {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 1;
+  filter: saturate(1.8) hue-rotate(-150deg) brightness(1.3) contrast(1.1);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .ritual-green-glow {
