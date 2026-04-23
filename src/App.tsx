@@ -416,9 +416,9 @@ export default function App() {
               className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-6 py-4 px-4 text-white"
             >
               {/* Typography */}
-              <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-medium tracking-tight leading-snug">
-                You've received your <span className="text-[#FFD700] font-bold">Golden Ticket</span> to{' '}
-                <span className="text-[#FFD700] font-bold">Ritual Testnet</span>.
+              <h1 className="text-white text-lg sm:text-xl md:text-2xl font-medium tracking-tight leading-snug">
+                You've received your <span className="text-[#FFD700] font-bold">Golden Ticket</span> to
+                <br /><span className="text-[#FFD700] font-bold">Day 1</span> of Ritual Testnet.
               </h1>
 
               {/* Ticket zone — rays use fixed so overflow-hidden never clips them */}
@@ -431,14 +431,14 @@ export default function App() {
                   animate={{ y: ['-3%', '3%', '-3%'] }}
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  {/* Rotating rays — absolute inset[-150%] = centered on ticket, overflow-hidden removed from main so no clip */}
+                  {/* Rotating rays — smaller inset, smooth circular fade to transparent */}
                   <div
                     className="absolute pointer-events-none z-[-1]"
                     style={{
-                      inset: '-150%',
-                      maskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 52%)',
-                      WebkitMaskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 52%)',
-                      opacity: 0.55,
+                      inset: '-70%',
+                      maskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, rgba(0,0,0,0) 60%)',
+                      WebkitMaskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, rgba(0,0,0,0) 60%)',
+                      opacity: 0.6,
                       mixBlendMode: 'screen',
                     }}
                   >
@@ -470,7 +470,7 @@ export default function App() {
                     <line x1="280" y1="10" x2="280" y2="170" stroke="#b08d0b" strokeWidth="2" strokeDasharray="6 6" opacity="0.8"/>
                     <path d="M 15,15 L 345,15 L 345,65 A 25,25 0 0,0 345,115 L 345,165 L 15,165 L 15,115 A 25,25 0 0,0 15,65 Z" fill="none" stroke="#a67c00" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col justify-start pt-3 pl-4 pointer-events-none">
+                  <div className="absolute inset-0 flex flex-col justify-start pt-3 pl-4 pointer-events-none text-left">
                     <div className="font-bold tracking-widest text-[#4a3600] text-sm leading-none">RITUAL</div>
                     <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-none mt-[3px]">DAY 01</div>
                     <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-none mt-[2px]">TESTNET</div>
@@ -507,8 +507,8 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 3, duration: 0.5 }}
               >
-                <button onClick={handleReveal} className="px-10 py-4 bg-[#FFD700] text-[#3D2B00] rounded-2xl font-black text-lg tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center gap-3 active:scale-[0.98]">
-                  <span>VIEW TICKET</span><TicketIcon className="w-5 h-5" />
+                <button onClick={handleReveal} className="px-7 py-3 bg-[#FFD700] text-[#3D2B00] rounded-xl font-black text-sm tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center gap-2 active:scale-[0.98]">
+                  <span>VIEW TICKET</span><TicketIcon className="w-4 h-4" />
                 </button>
               </motion.div>
             </motion.div>
