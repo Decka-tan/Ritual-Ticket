@@ -5,11 +5,9 @@ import {
   ArrowRight,
   Download,
   User,
-  Sparkles,
   Ticket as TicketIcon,
   Loader2,
   Star,
-  Zap,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
@@ -49,6 +47,20 @@ const fetchTwitterProfile = async (username: string) => {
 };
 
 // Components
+const GoldSparkle = ({ top, left, size, delay }: { top: string; left: string; size: number; delay: number }) => (
+  <motion.div
+    className="absolute pointer-events-none z-20"
+    style={{ top, left, width: size, height: size }}
+    initial={{ opacity: 0, scale: 0 }}
+    animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }}
+    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay }}
+  >
+    <svg viewBox="0 0 24 24" fill="#FFD700" className="w-full h-full drop-shadow-[0_0_6px_rgba(255,215,0,0.9)]">
+      <path d="M12 0L13.5 9.5L24 12L13.5 14.5L12 24L10.5 14.5L0 12L10.5 9.5Z" />
+    </svg>
+  </motion.div>
+);
+
 const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null }>(({ profile }, ref) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -195,40 +207,26 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] selection:bg-[#BAFF00]/30 flex flex-col font-sans overflow-hidden">
       <main className="flex-grow flex flex-col items-center justify-center relative overflow-hidden">
-        
-        {/* PERSISTENT RIPPLE BACKGROUND */}
-        <AnimatePresence>
-          {isPortalActive && (
-            <motion.div 
-              key="ripple-bg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none"
-            >
-              {/* Fade to Black Overlay (only during transition) */}
-              <motion.div 
-                animate={{ opacity: step === 'transitioning' ? [0, 0, 1] : 0 }}
-                transition={{ duration: 3.5 }}
-                className="absolute inset-0 bg-black z-10 pointer-events-none"
-              />
 
-              <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute left-1/2 top-1/2 rounded-full border border-[#BAFF00]/40 animate-ritual-ripple will-change-transform"
-                    style={{ 
-                      width: '120px', 
-                      height: '120px', 
-                      animationDelay: `${i * (3.0 / transitionSpeed)}s`,
-                      animationDuration: `${12 / transitionSpeed}s`
-                    }}
-                  />
-                ))}
-              </div>
-            </motion.div>
+        {/* PAGE BACKGROUND — dark with centered Ritual green ambient glow */}
+        <div className="fixed inset-0 z-0 pointer-events-none bg-black">
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vh] rounded-full opacity-25"
+            style={{ background: 'radial-gradient(circle, #BAFF00 0%, transparent 70%)', filter: 'blur(80px)' }}
+          />
+        </div>
+
+        {/* Fade-to-black overlay during transition */}
+        <AnimatePresence>
+          {step === 'transitioning' && (
+            <motion.div
+              key="fade-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0, 1] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 3.5 }}
+              className="fixed inset-0 bg-black z-10 pointer-events-none"
+            />
           )}
         </AnimatePresence>
 
@@ -239,20 +237,19 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="relative z-20 flex flex-col items-center text-center space-y-8 px-4 text-white"
+              className="relative z-20 flex flex-col items-center text-center gap-5 px-4 text-white"
             >
-              <img src="/ritual-wordmark.png" alt="Ritual" className="h-12 md:h-16 mb-6" />
-              <div className="space-y-4">
-                <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.85]">
-                  Enter the <br className="hidden md:block" />
-                  <span className="ritual-green-text italic">Ritual</span>
+              <img src="/ritual-wordmark.png" alt="Ritual" className="h-10 md:h-12" />
+              <div className="space-y-2">
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85]">
+                  Enter the <span className="ritual-green-text italic">Ritual</span>
                 </h1>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase opacity-90 leading-tight">Testnet Portal</h2>
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase opacity-90 leading-tight">Testnet Portal</h2>
               </div>
-              <p className="text-white/40 text-lg md:text-xl max-w-md font-medium">Input your X account to discover your ticket</p>
+              <p className="text-white/40 text-base md:text-lg max-w-sm font-medium">Input your X account to discover your ticket</p>
               <button
                 onClick={() => setStep('login')}
-                className="mt-10 px-12 py-5 bg-[#BAFF00] text-black rounded-full font-black text-xl tracking-tight hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(186,255,0,0.3)]"
+                className="mt-4 px-10 py-4 bg-[#BAFF00] text-black rounded-full font-black text-lg tracking-tight hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(186,255,0,0.3)]"
               >
                 Sign in
               </button>
@@ -342,41 +339,61 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 1.5, filter: 'blur(20px)' }}
-              className="w-full max-w-2xl flex flex-col items-center text-center space-y-12 py-10 text-white"
+              className="w-full max-w-xl flex flex-col items-center text-center gap-8 py-6 text-white"
             >
-              <div className="relative w-64 h-80 perspective-1000">
-                <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none flex items-center justify-center">
+              {/* Ticket card + rays + sparkles — all local */}
+              <div className="relative w-44 h-56 perspective-1000 flex items-center justify-center">
+                {/* Gold sparkles around ticket */}
+                <GoldSparkle top="-20%" left="10%" size={14} delay={0} />
+                <GoldSparkle top="-10%" left="75%" size={18} delay={1.1} />
+                <GoldSparkle top="50%" left="-18%" size={12} delay={0.6} />
+                <GoldSparkle top="80%" left="5%" size={16} delay={2.0} />
+                <GoldSparkle top="95%" left="60%" size={14} delay={0.3} />
+                <GoldSparkle top="20%" left="88%" size={20} delay={1.7} />
+                <GoldSparkle top="65%" left="92%" size={12} delay={0.9} />
+                {/* Rotating rays — behind ticket, fades at edges via radial mask */}
+                <div
+                  className="absolute w-[360px] h-[360px] -z-10 pointer-events-none"
+                  style={{
+                    maskImage: 'radial-gradient(circle at center, black 15%, transparent 58%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 15%, transparent 58%)',
+                    opacity: 0.45,
+                  }}
+                >
                   <motion.div
-                    initial={{ opacity: 0.1, scale: 0.8 }}
-                    animate={{ opacity: [0.1, 0.25, 0.1], scale: [0.8, 1.1, 0.8] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-[400px] h-[400px] rounded-full blur-[100px]"
-                    style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%)' }}
+                    className="w-full h-full"
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+                    style={{ background: 'repeating-conic-gradient(from 0deg, transparent 0deg 8deg, #FFD700 8deg 16deg)' }}
                   />
                 </div>
+                {/* Center glow pulse — circular, transparent at edges */}
                 <motion.div
-                  animate={{ rotateY: [0, 360], rotateX: [0, 10, -10, 0], y: [-10, 10, -10] }}
-                  transition={{ rotateY: { duration: 10, repeat: Infinity, ease: "linear" }, y: { duration: 4, repeat: Infinity, ease: "easeInOut" }, rotateX: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
-                  className="w-full h-full bg-gradient-to-br from-[#FFD700] via-[#FFEA70] to-[#6B4F00] rounded-2xl shadow-[0_0_80px_rgba(255,215,0,0.4)] vault-glow flex items-center justify-center border-2 border-white/20"
+                  animate={{ opacity: [0.35, 0.6, 0.35], scale: [0.85, 1.05, 0.85] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute w-[220px] h-[220px] rounded-full -z-10"
+                  style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0.1) 55%, transparent 75%)', filter: 'blur(12px)' }}
+                />
+                <motion.div
+                  animate={{ rotateY: [0, 360], rotateX: [0, 10, -10, 0], y: [-6, 6, -6] }}
+                  transition={{ rotateY: { duration: 10, repeat: Infinity, ease: 'linear' }, y: { duration: 4, repeat: Infinity, ease: 'easeInOut' }, rotateX: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }}
+                  className="w-full h-full bg-gradient-to-br from-[#FFD700] via-[#FFEA70] to-[#6B4F00] rounded-xl shadow-[0_0_60px_rgba(255,215,0,0.4)] flex items-center justify-center border-2 border-white/20"
                 >
-                  <div className="absolute inset-2 border border-white/10 rounded-xl" />
-                  <Sparkles className="w-20 h-20 text-[#3D2B00] drop-shadow-[0_0_15px_rgba(0,0,0,0.2)]" />
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-40">
-                    <Zap className="w-4 h-4 fill-[#3D2B00]" />
-                    <span className="text-[8px] font-black tracking-widest text-[#3D2B00] uppercase">Legendary Artifact</span>
-                  </div>
+                  <div className="absolute inset-2 border border-white/10 rounded-lg" />
+                  <Star className="w-14 h-14 text-[#3D2B00] drop-shadow-[0_0_10px_rgba(0,0,0,0.2)]" />
                 </motion.div>
-                <div className="absolute inset-0 bg-[#FFD700]/20 rounded-full filter blur-[60px] animate-pulse-slow -z-10" />
               </div>
-              <div className="space-y-6">
-                <h3 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">You've received your <span className="text-[#FFD700]">Golden Ticket</span> <br /> to Ritual Testnet.</h3>
-                <p className="text-white/40 max-w-md mx-auto">A cryptographic entry pass forged in the Arcadia District. Reveal your unique serial now.</p>
+
+              <div className="space-y-3">
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">You've received your <span className="text-[#FFD700]">Golden Ticket</span> <br /> to Ritual Testnet.</h3>
+                <p className="text-white/40 max-w-sm mx-auto text-sm">A cryptographic entry pass forged in the Arcadia District. Reveal your unique serial now.</p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center px-10">
-                <button onClick={handleReveal} className="flex-1 bg-[#FFD700] text-[#3D2B00] py-5 rounded-2xl font-black text-xl tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
-                  <span>VIEW TICKET</span><TicketIcon className="w-6 h-6" />
+
+              <div className="flex flex-col sm:flex-row gap-3 w-full justify-center px-6">
+                <button onClick={handleReveal} className="flex-1 bg-[#FFD700] text-[#3D2B00] py-4 rounded-2xl font-black text-lg tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                  <span>VIEW TICKET</span><TicketIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => setStep('portal')} className="px-8 py-5 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all text-white/60 hover:text-white font-bold"><span>CHECK ANOTHER</span></button>
+                <button onClick={() => setStep('portal')} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all text-white/60 hover:text-white font-bold text-sm"><span>CHECK ANOTHER</span></button>
               </div>
             </motion.div>
           )}
@@ -386,9 +403,12 @@ export default function App() {
               key="ticket"
               initial={{ opacity: 0, scale: 0.8, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="w-full flex flex-col items-center gap-16"
+              className="w-full flex flex-col items-center gap-10"
             >
-              <Ticket ref={ticketRef} profile={profile} />
+              {/* Scale wrapper — ticket stays full-res for download, visually smaller */}
+              <div style={{ transform: 'scale(0.65)', transformOrigin: 'top center', marginBottom: '-80px' }}>
+                <Ticket ref={ticketRef} profile={profile} />
+              </div>
               <div className="flex flex-wrap justify-center gap-6">
                 <button onClick={handleDownload} className="px-10 py-5 bg-white/5 border border-white/20 rounded-2xl flex items-center gap-3 hover:bg-[#FFD700]/10 hover:border-[#FFD700]/40 transition-all font-bold group backdrop-blur-md text-white">
                   <Download className="w-5 h-5 text-white/60 group-hover:text-[#FFD700]" />
