@@ -5,11 +5,9 @@ import {
   ArrowRight,
   Download,
   User,
-  Sparkles,
   Ticket as TicketIcon,
   Loader2,
   Star,
-  Zap,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
