@@ -126,6 +126,34 @@ const fetchTwitterProfile = async (username: string) => {
 // Components
 const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ticketColor?: TicketColor }>(({ profile, ticketColor = 'gold' }, ref) => {
   const colors = ticketColorPalettes[ticketColor];
+
+  const metaStyle = {
+    background: `linear-gradient(135deg, ${colors.dark} 0%, ${colors.text} 100%)`,
+    WebkitBackgroundClip: 'text' as const,
+    WebkitTextFillColor: 'transparent' as const,
+    backgroundClip: 'text' as const,
+    paddingRight: '0.15em',
+    paddingBottom: '0.15em',
+  };
+  const displayStyle = {
+    background: `linear-gradient(${colors.text} 0%, ${colors.border} 92.55%)`,
+    WebkitBackgroundClip: 'text' as const,
+    WebkitTextFillColor: 'transparent' as const,
+    backgroundClip: 'text' as const,
+    filter: 'drop-shadow(rgba(255,255,255,0.4) 0px 3px 0px)',
+    fontWeight: 900,
+    paddingRight: '0.1em',
+    paddingBottom: '0.1em',
+  };
+  const usernameStyle = {
+    background: `linear-gradient(135deg, ${colors.text} 0%, ${colors.dark} 100%)`,
+    WebkitBackgroundClip: 'text' as const,
+    WebkitTextFillColor: 'transparent' as const,
+    backgroundClip: 'text' as const,
+    paddingRight: '0.1em',
+    paddingBottom: '0.1em',
+  };
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -168,14 +196,14 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, clipPath: `path("${ticketPath}")`, width: `${totalWidth}px`, ...ticketStyle }}
-      className="perspective-1000 relative h-[320px] flex group select-none shadow-[0_40px_80px_rgba(0,0,0,0.6)] bg-[#FFD700] rounded-3xl overflow-hidden border-b-6 border-[#b17504]"
+      style={{ rotateX, rotateY, clipPath: `path("${ticketPath}")`, width: `${totalWidth}px`, ...ticketStyle, backgroundColor: colors.primary, borderBottomColor: colors.border }}
+      className="perspective-1000 relative h-[320px] flex group select-none shadow-[0_40px_80px_rgba(0,0,0,0.6)] overflow-hidden border-b-6"
     >
       <motion.div
         className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-20 transition-opacity duration-300"
         style={{ background: `radial-gradient(circle at ${x.get() + 335}px ${y.get() + 160}px, rgba(255, 255, 255, 1), transparent 60%)` }}
       />
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-3xl">
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFDB25] to-[#FFD700]" style={{ background: `linear-gradient(to bottom right, var(--ticket-primary), var(--ticket-secondary), var(--ticket-primary))` }} />
         <motion.div
           animate={{ scale: [1, 1.2, 1], x: [20, -20, 20] }}
@@ -200,32 +228,32 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
           </div>
           <div className="mt-2 min-w-0">
             <div className="rounded-full border-[3px] border-[#FFB90A] px-3 py-1.5 bg-transparent backdrop-blur-sm inline-flex items-center max-w-[280px]" style={{ borderColor: 'var(--ticket-light)' }}>
-              <p className="font-medium text-sm leading-none tracking-tight ticket-username truncate whitespace-nowrap"> @{profile?.username || 'traveler'} </p>
+              <p className="font-medium text-sm leading-none tracking-tight truncate whitespace-nowrap font-mono" style={usernameStyle}> @{profile?.username || 'traveler'} </p>
             </div>
           </div>
         </div>
         <div className="mb-6 pr-10">
-          <div className="text-[9px] tracking-widest uppercase font-bold text-[#4E2F10] opacity-80 mb-2">Authorized Forge Access</div>
-          <h2 className="text-[2.8rem] font-black tracking-tighter leading-[1.02] mb-1 ticket-display-name overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', maxHeight: '5.7rem' }}> {profile?.displayName || 'Traveler Name'} </h2>
+          <div className="text-[9px] tracking-widest uppercase font-bold opacity-80 mb-2" style={{ color: colors.text }}>Authorized Forge Access</div>
+          <h2 className="text-[2.8rem] tracking-tighter leading-[1.02] mb-1 overflow-hidden line-clamp-2" style={displayStyle}> {profile?.displayName || 'Traveler Name'} </h2>
         </div>
-        <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between h-5 text-[#4E2F10]">
-          <div style={{ maskImage: 'url(/Logo_RItual_Black.png)', maskSize: 'contain', maskRepeat: 'no-repeat', background: 'var(--ticket-gradient)', width: '24px', height: '14px' }} />
-          <div className="flex-grow h-[1px] bg-gradient-to-r from-[#1E1E1E] to-[#B17714] opacity-50 mx-3" style={{ background: 'linear-gradient(to right, #1E1E1E, var(--ticket-border))' }} />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] ticket-text-metadata font-mono">TESTNET</span>
+        <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between h-5" style={{ color: colors.text }}>
+          <div style={{ maskImage: 'url(/Logo_RItual_Black.png)', maskSize: 'contain', maskRepeat: 'no-repeat', background: colors.gradient, width: '24px', height: '14px' }} />
+          <div className="flex-grow h-[1px] opacity-50 mx-3" style={{ background: `linear-gradient(to right, ${colors.text}, ${colors.border})` }} />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] font-mono" style={metaStyle}>TESTNET</span>
         </div>
       </div>
-      <div className="h-full relative z-20 flex flex-col items-center p-6 text-center border-l-2 border-dashed overflow-hidden rounded-tr-3xl rounded-br-3xl" style={{ width: '190px', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-        <div className="absolute top-5 text-[9px] font-black tracking-[0.4em] uppercase ticket-text-metadata font-mono">RITUAL.NET</div>
-        <div className="absolute top-[52%] -translate-y-1/2 w-full flex flex-col items-center uppercase text-white">
-          <div className="text-4xl font-black tracking-tighter leading-[0.85] ticket-text-gold">READY</div>
-          <div className="text-4xl font-black tracking-tighter leading-[0.85] ticket-text-gold">FOR</div>
-          <div className="text-4xl font-black tracking-tighter leading-[0.85] ticket-text-gold">TESTNET</div>
-          <div className="text-[10px] font-black uppercase tracking-[0.4em] pt-1 ticket-text-metadata font-mono">(DO NOT LOSE)</div>
+      <div className="h-full relative z-20 flex flex-col items-center p-6 text-center border-l-2 overflow-hidden" style={{ width: '190px', borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="absolute top-5 text-[9px] font-black tracking-[0.4em] uppercase font-mono" style={metaStyle}>RITUAL.NET</div>
+        <div className="absolute top-[52%] -translate-y-1/2 w-full flex flex-col items-center uppercase">
+          {['READY', 'FOR', 'TESTNET'].map(word => (
+            <div key={word} className="text-4xl font-black tracking-tighter leading-[0.85]" style={metaStyle}>{word}</div>
+          ))}
+          <div className="text-[10px] font-black uppercase tracking-[0.4em] pt-1 font-mono" style={metaStyle}>(DO NOT LOSE)</div>
         </div>
-        <div className="absolute bottom-4 left-8 right-8 flex items-center justify-between h-5 h-5 text-white">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] ticket-text-metadata font-mono">Day</span>
-          <div className="flex-grow h-[1px] bg-gradient-to-r from-[#1E1E1E] to-[#B17714] opacity-50 mx-3" />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] ticket-text-metadata font-mono">01</span>
+        <div className="absolute bottom-4 left-8 right-8 flex items-center justify-between h-5">
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] font-mono" style={metaStyle}>Day</span>
+          <div className="flex-grow h-[1px] opacity-50 mx-3" style={{ background: `linear-gradient(to right, ${colors.text}, ${colors.border})` }} />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] font-mono" style={metaStyle}>01</span>
         </div>
       </div>
     </motion.div>
