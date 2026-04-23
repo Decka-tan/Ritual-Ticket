@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ritual: #40FFAF;
+  --color-ritual-dark: #077345;
+  
+  /* Monad Gold Theme */
+  --color-monad-gold: #FFD700;
+  --color-monad-light: #FFEA70;
+  --color-monad-dark: #6B4F00;
+  --color-monad-text: #3D2B00;
+  
+  --color-background: #06080b;
+  
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  --animate-laser: laser 8s linear infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 12s linear infinite;
+  --animate-flare: flare 4s ease-in-out infinite;
+
+  @keyframes laser {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes flare {
+    0%, 100% { opacity: 0.2; filter: blur(20px); transform: scale(1); }
+    50% { opacity: 0.5; filter: blur(40px); transform: scale(1.2); }
+  }
+}
+
+:root {
+  background-color: var(--color-background);
+  color: white;
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Gold Foil Effect */
+.gold-foil {
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 215, 0, 0.3) 30%,
+    rgba(255, 255, 255, 0.2) 35%,
+    transparent 45%
+  );
+  background-size: 250% 100%;
+}
+
+.gold-foil:hover {
+  animation: laser 3s ease-in-out infinite;
+}
+
+/* Glassmorphism Gold */
+.glass-gold {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Cinematic Reveal Effects */
+.vault-glow {
+  box-shadow: 0 0 100px rgba(255, 215, 0, 0.2), inset 0 0 40px rgba(255, 215, 0, 0.1);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Custom Ticket Typography */
+.ticket-text-gold {
+  background: linear-gradient(135deg, #F9B502 0%, #B17714 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 0px rgba(255, 245, 185, 0.5));
+  padding-right: 0.15em;
+  padding-bottom: 0.15em;
+}
+
+.ticket-text-metadata {
+  background: linear-gradient(135deg, #E6A701 0%, #4E2F10 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 0px rgba(255, 245, 185, 0.4));
+  padding-right: 0.15em;
+  padding-bottom: 0.15em;
+}
+
+.ticket-text-secondary {
+  color: #4E2F10;
+  filter: drop-shadow(0 1px 0px rgba(255, 245, 185, 0.4));
+  padding-right: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+.ticket-display-name {
+  background: linear-gradient(rgb(30, 30, 30) 0%, rgb(204, 133, 0) 92.55%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(rgb(255, 245, 185) 0px 3px 0px);
+  font-weight: 900;
+  padding-right: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+.ticket-username {
+  background: linear-gradient(135deg, #4E2F10 0%, #4E2F10 65%, #B17714 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  padding-right: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+/* Ritual Cinematic Portal Effects */
+@keyframes ritual-ripple {
+  0% {
+    transform: translate(-50%, -50%) translateZ(0) scale(0);
+    opacity: 0;
+    border-width: 25px;
+  }
+  30% {
+    opacity: 0.4;
+    border-width: 12px;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateZ(0) scale(15);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+.animate-ritual-ripple {
+  animation: ritual-ripple 12s cubic-bezier(0.1, 0.1, 0.2, 1) infinite;
+  filter: blur(10px);
+  backface-visibility: hidden;
+  box-shadow: inset 0 0 80px rgba(186, 255, 0, 0.2), 0 0 40px rgba(186, 255, 0, 0.1);
+  will-change: transform, opacity;
+}
+
+.ritual-green-glow {
+  background: radial-gradient(circle, #BAFF00 0%, transparent 70%);
+}
+
+.ritual-green-text {
+  color: #BAFF00;
+  text-shadow: 0 0 20px rgba(186, 255, 0, 0.5);
+}
