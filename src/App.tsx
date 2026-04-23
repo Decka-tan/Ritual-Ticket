@@ -265,7 +265,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <main className="flex-grow flex flex-col items-center justify-center relative overflow-hidden z-10 pt-20">
+      <main className="flex-grow flex flex-col items-center justify-center relative z-10">
 
         <AnimatePresence mode="wait">
           {step === 'portal' && (
@@ -413,89 +413,91 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 1.5, filter: 'blur(20px)' }}
-              className="relative z-10 w-full flex flex-col items-center text-center gap-6 py-6 px-4 text-white"
+              className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center gap-8 py-16 px-4 text-white"
             >
               {/* Typography */}
-              <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-medium tracking-tight leading-snug drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-medium tracking-tight leading-snug">
                 You've received your <span className="text-[#FFD700] font-bold">Golden Ticket</span> to{' '}
                 <span className="text-[#FFD700] font-bold">Ritual Testnet</span>.
               </h1>
 
-              {/* Ticket + rays + sparkles — container needs explicit height for absolute positioning */}
-              <div className="relative w-full max-w-[560px] h-[200px] sm:h-[240px] flex justify-center items-center">
-                <div className="relative z-10 w-[220px] sm:w-[280px] aspect-[2/1] mx-auto transform -rotate-6">
-                  {/* Center glow — circular, fades at edges */}
-                  <motion.div
-                    className="absolute inset-0 rounded-full blur-[50px] opacity-50 mix-blend-screen"
-                    style={{ background: '#FFD700' }}
-                    animate={{ opacity: [0.4, 0.7, 0.4], scale: [0.9, 1.1, 0.9] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  />
+              {/* Ticket zone — rays use fixed so overflow-hidden never clips them */}
+              <div className="relative flex justify-center items-center" style={{ width: '320px', height: '160px' }}>
 
-                  {/* Rotating rays — local behind ticket, radial mask fades ray ends */}
-                  <div
-                    className="absolute inset-[-150%] pointer-events-none opacity-40 mix-blend-screen z-[-1]"
-                    style={{ maskImage: "radial-gradient(circle at center, black 8%, transparent 55%)", WebkitMaskImage: "radial-gradient(circle at center, black 8%, transparent 55%)" }}
-                  >
-                    <motion.div
-                      className="w-full h-full rounded-full"
-                      animate={{ rotate: [0, 360] }}
-                      transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
-                      style={{ background: "repeating-conic-gradient(from 0deg, transparent 0deg 10deg, #FFD700 10deg 20deg)" }}
-                    />
-                  </div>
+                {/* Rotating rays: fixed, centered on screen, fades smoothly to transparent */}
+                <motion.div
+                  className="fixed pointer-events-none z-0"
+                  style={{
+                    width: '340px', height: '340px',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%) rotate(0deg)',
+                    maskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 55%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 55%)',
+                    opacity: 0.5,
+                    mixBlendMode: 'screen',
+                  }}
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+                >
+                  <div className="w-full h-full" style={{ background: 'repeating-conic-gradient(from 0deg, transparent 0deg 10deg, #FFD700 10deg 20deg)' }} />
+                </motion.div>
 
-                  {/* Ticket Body */}
-                  <motion.div
-                    className="absolute inset-0 drop-shadow-[0_0_25px_rgba(255,215,0,0.4)]"
-                    animate={{ y: ["-3%", "3%", "-3%"] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <svg width="100%" height="100%" viewBox="0 0 360 180" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#fff5cc" />
-                          <stop offset="25%" stopColor="#f8d648" />
-                          <stop offset="50%" stopColor="#f5c518" />
-                          <stop offset="100%" stopColor="#c39d10" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 12,0 L 348,0 A 12,12 0 0,1 360,12 L 360,65 A 25,25 0 0,0 360,115 L 360,168 A 12,12 0 0,1 348,180 L 12,180 A 12,12 0 0,1 0,168 L 0,115 A 25,25 0 0,0 0,65 L 0,12 A 12,12 0 0,1 12,0 Z"
-                        fill="url(#goldGradient)"
-                      />
-                      <line x1="280" y1="10" x2="280" y2="170" stroke="#b08d0b" strokeWidth="2" strokeDasharray="6 6" opacity="0.8"/>
-                      <path d="M 15,15 L 345,15 L 345,65 A 25,25 0 0,0 345,115 L 345,165 L 15,165 L 15,115 A 25,25 0 0,0 15,65 Z" fill="none" stroke="#a67c00" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col pt-6 pl-6 sm:pt-8 sm:pl-8 pointer-events-none">
-                      <div className="font-sans font-bold tracking-widest text-[#4a3600] text-lg sm:text-2xl mb-1 drop-shadow-[0_1px_rgba(255,255,255,0.4)]">RITUAL</div>
-                      <div className="font-mono font-bold tracking-wider text-[#5a4200] text-xs sm:text-sm leading-tight mt-1">TESTNET</div>
-                      <div className="absolute bottom-5 sm:bottom-8 right-20 sm:right-24 w-5 h-5 sm:w-6 sm:h-6 text-[#4a3600]">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-                      </div>
+                {/* Center glow pulse */}
+                <motion.div
+                  className="absolute rounded-full pointer-events-none"
+                  style={{ width: '200px', height: '200px', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, rgba(255,215,0,0.6) 0%, transparent 70%)', filter: 'blur(20px)' }}
+                  animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.9, 1.1, 0.9] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                />
+
+                {/* Ticket */}
+                <motion.div
+                  className="relative z-10 transform -rotate-6"
+                  style={{ width: '160px', aspectRatio: '2/1' }}
+                  animate={{ y: ['-3%', '3%', '-3%'] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <svg width="100%" height="100%" viewBox="0 0 360 180" preserveAspectRatio="none" className="drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">
+                    <defs>
+                      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#fff5cc" />
+                        <stop offset="25%" stopColor="#f8d648" />
+                        <stop offset="50%" stopColor="#f5c518" />
+                        <stop offset="100%" stopColor="#c39d10" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M 12,0 L 348,0 A 12,12 0 0,1 360,12 L 360,65 A 25,25 0 0,0 360,115 L 360,168 A 12,12 0 0,1 348,180 L 12,180 A 12,12 0 0,1 0,168 L 0,115 A 25,25 0 0,0 0,65 L 0,12 A 12,12 0 0,1 12,0 Z" fill="url(#goldGradient)" />
+                    <line x1="280" y1="10" x2="280" y2="170" stroke="#b08d0b" strokeWidth="2" strokeDasharray="6 6" opacity="0.8"/>
+                    <path d="M 15,15 L 345,15 L 345,65 A 25,25 0 0,0 345,115 L 345,165 L 15,165 L 15,115 A 25,25 0 0,0 15,65 Z" fill="none" stroke="#a67c00" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col justify-start pt-4 pl-5 pointer-events-none">
+                    <div className="font-bold tracking-widest text-[#4a3600] text-sm leading-none">RITUAL</div>
+                    <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-tight mt-1">TESTNET</div>
+                    <div className="absolute bottom-3 right-14 w-4 h-4 text-[#4a3600]">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
-                  </motion.div>
-                </div>
+                  </div>
+                </motion.div>
 
-                {/* Ritual logo sparkles — siblings to ticket, spread around container */}
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ top: '5%', left: '8%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }} className="absolute w-6 h-6 pointer-events-none z-20" style={{ top: '10%', right: '10%', filter: 'drop-shadow(0 0 8px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.7 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ bottom: '10%', left: '5%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2.2, repeat: Infinity, delay: 2.1 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ bottom: '5%', right: '8%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 1.8, repeat: Infinity, delay: 1.6 }} className="absolute w-4 h-4 pointer-events-none z-20" style={{ top: '50%', left: '2%', filter: 'drop-shadow(0 0 5px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
-                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1.1, 0] }} transition={{ duration: 2.3, repeat: Infinity, delay: 0.4 }} className="absolute w-4 h-4 pointer-events-none z-20" style={{ top: '50%', right: '2%', filter: 'drop-shadow(0 0 5px #BAFF00)' }}>
-                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                </motion.div>
+                {/* Ritual logo sparkles — absolute within the 320x160 zone */}
+                {[
+                  { top: '-30%', left: '4%',   size: 18, delay: 0,   dur: 2.0 },
+                  { top: '-20%', right: '6%',  size: 22, delay: 1.2, dur: 2.5 },
+                  { top: '40%',  left: '-8%',  size: 16, delay: 0.7, dur: 2.0 },
+                  { top: '40%',  right: '-8%', size: 16, delay: 1.8, dur: 2.2 },
+                  { top: '110%', left: '12%',  size: 18, delay: 0.4, dur: 2.3 },
+                  { top: '110%', right: '12%', size: 14, delay: 1.6, dur: 1.8 },
+                ].map((s, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute pointer-events-none z-20"
+                    style={{ top: s.top, left: s.left, right: (s as any).right, width: s.size, height: s.size, filter: 'drop-shadow(0 0 6px #BAFF00)' }}
+                    animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
+                    transition={{ duration: s.dur, repeat: Infinity, delay: s.delay, ease: 'easeInOut' }}
+                  >
+                    <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                  </motion.div>
+                ))}
               </div>
 
               {/* Buttons with 3s delay */}
@@ -503,12 +505,12 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 3, duration: 0.5 }}
-                className="flex flex-col sm:flex-row gap-3 w-full max-w-md justify-center"
+                className="flex flex-col sm:flex-row gap-3 w-full max-w-sm justify-center"
               >
                 <button onClick={handleReveal} className="flex-1 bg-[#FFD700] text-[#3D2B00] py-4 rounded-2xl font-black text-lg tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
                   <span>VIEW TICKET</span><TicketIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => resetToPortal()} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all text-white/60 hover:text-white font-bold text-sm"><span>CHECK ANOTHER</span></button>
+                <button onClick={() => resetToPortal()} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all text-white/60 hover:text-white font-bold text-sm">CHECK ANOTHER</button>
               </motion.div>
             </motion.div>
           )}
