@@ -207,3 +207,16 @@ body {
   color: #BAFF00;
   text-shadow: 0 0 20px rgba(186, 255, 0, 0.5);
 }
+
+.ritual-reveal-video {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 1;
+  filter: saturate(2.5) hue-rotate(-160deg) brightness(1.4) contrast(1.2);
+  pointer-events: none;
+  z-index: 1;
+}
