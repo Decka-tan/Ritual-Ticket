@@ -421,8 +421,8 @@ export default function App() {
                 <span className="text-[#FFD700] font-bold">Ritual Testnet</span>.
               </h1>
 
-              {/* Ticket + rays — all local, nothing fixed/full-page */}
-              <div className="relative w-full max-w-[420px] flex justify-center items-center">
+              {/* Ticket + rays + sparkles — container needs explicit height for absolute positioning */}
+              <div className="relative w-full max-w-[560px] h-[200px] sm:h-[240px] flex justify-center items-center">
                 <div className="relative z-10 w-[220px] sm:w-[280px] aspect-[2/1] mx-auto transform -rotate-6">
                   {/* Center glow — circular, fades at edges */}
                   <motion.div
@@ -477,21 +477,25 @@ export default function App() {
                   </motion.div>
                 </div>
 
-                {/* Ritual logo sparkles — local around ticket */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0 }} className="absolute top-[15%] left-[25%] w-4 h-4" style={{ filter: 'drop-shadow(0 0 4px #BAFF00)' }}>
-                    <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain opacity-80" />
-                  </motion.div>
-                  <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }} className="absolute top-[25%] left-[72%] w-5 h-5" style={{ filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
-                    <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain opacity-90" />
-                  </motion.div>
-                  <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.7 }} className="absolute top-[60%] left-[18%] w-5 h-5" style={{ filter: 'drop-shadow(0 0 8px #BAFF00)' }}>
-                    <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
-                  </motion.div>
-                  <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 2.1 }} className="absolute top-[80%] left-[65%] w-4 h-4" style={{ filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
-                    <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain opacity-70" />
-                  </motion.div>
-                </div>
+                {/* Ritual logo sparkles — siblings to ticket, spread around container */}
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ top: '5%', left: '8%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }} className="absolute w-6 h-6 pointer-events-none z-20" style={{ top: '10%', right: '10%', filter: 'drop-shadow(0 0 8px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.7 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ bottom: '10%', left: '5%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 2.2, repeat: Infinity, delay: 2.1 }} className="absolute w-5 h-5 pointer-events-none z-20" style={{ bottom: '5%', right: '8%', filter: 'drop-shadow(0 0 6px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }} transition={{ duration: 1.8, repeat: Infinity, delay: 1.6 }} className="absolute w-4 h-4 pointer-events-none z-20" style={{ top: '50%', left: '2%', filter: 'drop-shadow(0 0 5px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
+                <motion.div animate={{ opacity: [0, 1, 0], scale: [0, 1.1, 0] }} transition={{ duration: 2.3, repeat: Infinity, delay: 0.4 }} className="absolute w-4 h-4 pointer-events-none z-20" style={{ top: '50%', right: '2%', filter: 'drop-shadow(0 0 5px #BAFF00)' }}>
+                  <img src="/Logo_RItual_White.png" alt="" className="w-full h-full object-contain" />
+                </motion.div>
               </div>
 
               {/* Buttons with 3s delay */}
