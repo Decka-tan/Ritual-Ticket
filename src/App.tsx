@@ -413,7 +413,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 1.5, filter: 'blur(20px)' }}
-              className="relative z-10 w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center gap-8 py-16 px-4 text-white"
+              className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-6 py-4 px-4 text-white"
             >
               {/* Typography */}
               <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-medium tracking-tight leading-snug">
@@ -424,39 +424,39 @@ export default function App() {
               {/* Ticket zone — rays use fixed so overflow-hidden never clips them */}
               <div className="relative flex justify-center items-center" style={{ width: '320px', height: '160px' }}>
 
-                {/* Rotating rays: fixed, centered on screen, fades smoothly to transparent */}
-                <motion.div
-                  className="fixed pointer-events-none z-0"
-                  style={{
-                    width: '340px', height: '340px',
-                    top: '50%', left: '50%',
-                    transform: 'translate(-50%, -50%) rotate(0deg)',
-                    maskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 55%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 55%)',
-                    opacity: 0.5,
-                    mixBlendMode: 'screen',
-                  }}
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
-                >
-                  <div className="w-full h-full" style={{ background: 'repeating-conic-gradient(from 0deg, transparent 0deg 10deg, #FFD700 10deg 20deg)' }} />
-                </motion.div>
-
-                {/* Center glow pulse */}
-                <motion.div
-                  className="absolute rounded-full pointer-events-none"
-                  style={{ width: '200px', height: '200px', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, rgba(255,215,0,0.6) 0%, transparent 70%)', filter: 'blur(20px)' }}
-                  animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.9, 1.1, 0.9] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-
-                {/* Ticket */}
+                {/* Ticket — rays are children so they're relative to ticket position */}
                 <motion.div
                   className="relative z-10 transform -rotate-6"
                   style={{ width: '160px', aspectRatio: '2/1' }}
                   animate={{ y: ['-3%', '3%', '-3%'] }}
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                 >
+                  {/* Rotating rays — absolute inset[-150%] = centered on ticket, overflow-hidden removed from main so no clip */}
+                  <div
+                    className="absolute pointer-events-none z-[-1]"
+                    style={{
+                      inset: '-150%',
+                      maskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 52%)',
+                      WebkitMaskImage: 'radial-gradient(circle at center, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 52%)',
+                      opacity: 0.55,
+                      mixBlendMode: 'screen',
+                    }}
+                  >
+                    <motion.div
+                      className="w-full h-full"
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+                      style={{ background: 'repeating-conic-gradient(from 0deg, transparent 0deg 10deg, #FFD700 10deg 20deg)' }}
+                    />
+                  </div>
+
+                  {/* Center glow pulse — behind ticket, circular fade */}
+                  <motion.div
+                    className="absolute rounded-full pointer-events-none z-[-1]"
+                    style={{ inset: '-60%', background: 'radial-gradient(circle, rgba(255,215,0,0.55) 0%, transparent 65%)', filter: 'blur(16px)' }}
+                    animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.9, 1.1, 0.9] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  />
                   <svg width="100%" height="100%" viewBox="0 0 360 180" preserveAspectRatio="none" className="drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">
                     <defs>
                       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -470,9 +470,10 @@ export default function App() {
                     <line x1="280" y1="10" x2="280" y2="170" stroke="#b08d0b" strokeWidth="2" strokeDasharray="6 6" opacity="0.8"/>
                     <path d="M 15,15 L 345,15 L 345,65 A 25,25 0 0,0 345,115 L 345,165 L 15,165 L 15,115 A 25,25 0 0,0 15,65 Z" fill="none" stroke="#a67c00" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col justify-start pt-4 pl-5 pointer-events-none">
+                  <div className="absolute inset-0 flex flex-col justify-start pt-3 pl-4 pointer-events-none">
                     <div className="font-bold tracking-widest text-[#4a3600] text-sm leading-none">RITUAL</div>
-                    <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-tight mt-1">TESTNET</div>
+                    <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-none mt-[3px]">DAY 01</div>
+                    <div className="font-mono font-bold tracking-wider text-[#5a4200] text-[10px] leading-none mt-[2px]">TESTNET</div>
                     <div className="absolute bottom-3 right-14 w-4 h-4 text-[#4a3600]">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
@@ -500,17 +501,15 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Buttons with 3s delay */}
+              {/* Button with 3s delay */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 3, duration: 0.5 }}
-                className="flex flex-col sm:flex-row gap-3 w-full max-w-sm justify-center"
               >
-                <button onClick={handleReveal} className="flex-1 bg-[#FFD700] text-[#3D2B00] py-4 rounded-2xl font-black text-lg tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                <button onClick={handleReveal} className="px-10 py-4 bg-[#FFD700] text-[#3D2B00] rounded-2xl font-black text-lg tracking-wide hover:shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-all flex items-center gap-3 active:scale-[0.98]">
                   <span>VIEW TICKET</span><TicketIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => resetToPortal()} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all text-white/60 hover:text-white font-bold text-sm">CHECK ANOTHER</button>
               </motion.div>
             </motion.div>
           )}
