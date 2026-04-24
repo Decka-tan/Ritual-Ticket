@@ -1,6 +1,7 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
 import cors from 'cors';
+import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,8 +14,6 @@ let browser;
 
 async function getBrowser() {
   if (!browser) {
-    // Check if we're on VPS (Ubuntu) with snap Chromium
-    const fs = require('fs');
     let launchOptions = {
       headless: 'new',
       args: [
