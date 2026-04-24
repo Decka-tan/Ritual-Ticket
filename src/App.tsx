@@ -934,24 +934,24 @@ export default function App() {
         transition={{ delay: 2, duration: 0.8 }}
         className="fixed bottom-6 left-6 right-6 z-50 flex justify-center"
       >
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 flex items-center gap-4 shadow-lg">
-          <span className="text-white/50 text-sm font-medium">just for fun - by Decka-chan</span>
+        <div className="flex items-center gap-4">
+          <span className="text-white/30 text-xs font-medium">just for fun - by Decka-chan</span>
           <div className="flex items-center gap-3">
             <a
               href="https://twitter.com/decka_chan"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
+              className="text-white/30 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
             >
-              <Twitter className="w-4 h-4" />
+              <Twitter className="w-3 h-3" />
             </a>
             <a
               href="https://github.com/Decka-tan"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
+              className="text-white/30 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
             >
-              <Github className="w-4 h-4" />
+              <Github className="w-3 h-3" />
             </a>
           </div>
         </div>
