@@ -394,54 +394,280 @@ export default function App() {
   const handleReveal = () => setStep('ticket');
 
   const handleDownload = async () => {
-    if (ticketRef.current === null) return;
+    if (!profile) return;
 
-    // Add loading state
     setIsLoading(true);
 
     try {
-      // Show img logos for Safari, hide mask-image logos
-      document.querySelectorAll('.safari-logo-only').forEach(el => {
-        (el as HTMLElement).style.display = 'block';
-      });
-      document.querySelectorAll('.safari-logo-hidden').forEach(el => {
-        (el as HTMLElement).style.display = 'none';
+      // Create high-resolution canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas not supported');
+
+      // Ticket dimensions (3x for retina quality)
+      const scale = 3;
+      const width = 575 * scale;
+      const height = 320 * scale;
+      canvas.width = width;
+      canvas.height = height;
+
+      const colors = ticketColorPalettes[ticketColor];
+
+      // Draw ticket background with gradient
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, colors.primary);
+      gradient.addColorStop(0.5, colors.secondary);
+      gradient.addColorStop(1, colors.primary);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw ticket shape with cutouts
+      ctx.save();
+      ctx.beginPath();
+      const leftWidth = 385 * scale;
+      const cutRadius = 16 * scale;
+
+      // Main ticket shape
+      ctx.moveTo(0, 0);
+      ctx.lineTo(leftWidth - cutRadius, 0);
+      ctx.arc(leftWidth, cutRadius, cutRadius, -Math.PI/2, Math.PI/2);
+      ctx.lineTo(leftWidth + cutRadius, 0);
+      ctx.lineTo(width, 0);
+      ctx.lineTo(width, height);
+      ctx.lineTo(leftWidth + cutRadius, height);
+      ctx.arc(leftWidth, height - cutRadius, cutRadius, Math.PI/2, -Math.PI/2);
+      ctx.lineTo(leftWidth - cutRadius, height);
+      ctx.lineTo(0, height);
+      ctx.closePath();
+
+      // Clip to ticket shape
+      ctx.clip();
+
+      // Draw decorative shimmer
+      ctx.save();
+      ctx.translate(-620 * scale, -150 * scale);
+      ctx.rotate(-55.6 * Math.PI / 180);
+      const shimmerGradient = ctx.createLinearGradient(0, 0, 800 * scale, 0);
+      shimmerGradient.addColorStop(0, 'transparent');
+      shimmerGradient.addColorStop(0.35, 'rgba(255,255,255,0)');
+      shimmerGradient.addColorStop(0.5, 'rgba(255,255,255,0.9)');
+      shimmerGradient.addColorStop(0.65, 'rgba(255,255,255,0)');
+      shimmerGradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = shimmerGradient;
+      ctx.fillRect(0, 0, 800 * scale, 1800 * scale);
+      ctx.restore();
+
+      // Draw ritual logo pattern (subtle)
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+
+      await new Promise<void>((resolve) => {
+        logoImg.onload = () => resolve();
+        logoImg.onerror = () => resolve(); // Continue even if logo fails
+        logoImg.src = '/Logo_RItual_Black.png';
       });
 
-      // Wait for DOM to update
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Draw large background logo
+      ctx.save();
+      ctx.translate(-40 * scale, height / 2);
+      ctx.scale(4, 4);
+      ctx.drawImage(logoImg, 0, -logoImg.height / 2, logoImg.width, logoImg.height);
+      ctx.restore();
 
-      const dataUrl = await toPng(ticketRef.current, {
-        cacheBust: true,
-        pixelRatio: 3,
-        backgroundColor: 'transparent',
-        skipAutoScale: true,
+      ctx.restore();
+
+      // Draw user avatar
+      const avatarSize = 32 * scale;
+      const avatarX = 24 * scale;
+      const avatarY = 20 * scale;
+
+      // Avatar background
+      ctx.beginPath();
+      ctx.arc(avatarX + avatarSize/2, avatarY + avatarSize/2 + 3*scale, avatarSize/2, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+
+      // Avatar circle
+      ctx.beginPath();
+      ctx.arc(avatarX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.save();
+      ctx.clip();
+
+      if (profile.avatar) {
+        const avatarImg = new Image();
+        avatarImg.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve) => {
+          avatarImg.onload = () => resolve();
+          avatarImg.onerror = () => resolve(); // Continue even if avatar fails
+          avatarImg.src = profile.avatar;
+        });
+        ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
+      } else {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(avatarX, avatarY, avatarSize, avatarSize);
+      }
+      ctx.restore();
+
+      // Draw username badge
+      const username = `@${profile.username}`;
+      ctx.font = `bold ${12 * scale}px 'Space Mono', monospace`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      // Username background
+      const textWidth = ctx.measureText(username).width;
+      const badgePadding = 12 * scale;
+      const badgeHeight = 24 * scale;
+      const badgeX = avatarX + avatarSize + 20 * scale;
+      const badgeY = avatarY + 20 * scale;
+
+      ctx.beginPath();
+      ctx.roundRect(badgeX, badgeY, textWidth + badgePadding * 2, badgeHeight, 12 * scale);
+      ctx.strokeStyle = colors.light;
+      ctx.lineWidth = 3 * scale;
+      ctx.stroke();
+
+      // Username text
+      ctx.fillStyle = colors.text;
+      ctx.fillText(username, badgeX + badgePadding, badgeY + badgeHeight/2);
+
+      // Draw "Authorized Forge Access" label
+      ctx.font = `bold ${9 * scale}px sans-serif`;
+      ctx.fillStyle = colors.text;
+      ctx.globalAlpha = 0.8;
+      ctx.fillText('AUTHORIZED FORGE ACCESS', 24 * scale, 200 * scale);
+      ctx.globalAlpha = 1;
+
+      // Draw display name
+      const displayName = profile.displayName || 'Traveler Name';
+      ctx.font = `900 ${46 * scale}px 'Outfit', sans-serif`;
+      ctx.fillStyle = colors.text;
+      ctx.textAlign = 'left';
+
+      // Draw text with gradient effect
+      const nameGradient = ctx.createLinearGradient(24 * scale, 0, 24 * scale, 250 * scale);
+      nameGradient.addColorStop(0, colors.text);
+      nameGradient.addColorStop(1, colors.border);
+      ctx.fillStyle = nameGradient;
+
+      // Word wrap for long names
+      const maxWidth = 280 * scale;
+      const words = displayName.split(' ');
+      let lineY = 240 * scale;
+      let currentLine = '';
+
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > maxWidth && currentLine) {
+          ctx.fillText(currentLine, 24 * scale, lineY);
+          currentLine = word;
+          lineY += 50 * scale;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      ctx.fillText(currentLine, 24 * scale, lineY);
+
+      // Draw footer elements
+      const footerY = height - 24 * scale;
+
+      // Small logo
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.drawImage(logoImg, 24 * scale, footerY - 14 * scale, 24 * scale, 14 * scale);
+      ctx.restore();
+
+      // Divider line
+      ctx.beginPath();
+      ctx.moveTo(60 * scale, footerY - 7 * scale);
+      ctx.lineTo(515 * scale, footerY - 7 * scale);
+      ctx.strokeStyle = '#1E1E1E';
+      ctx.lineWidth = 1 * scale;
+      ctx.stroke();
+
+      // TESTNET text
+      ctx.font = `900 ${10 * scale}px 'Space Mono', monospace`;
+      ctx.fillStyle = colors.text;
+      ctx.textAlign = 'right';
+      ctx.fillText('TESTNET', width - 24 * scale, footerY);
+
+      // Right section divider
+      ctx.beginPath();
+      ctx.moveTo(385 * scale, 15 * scale);
+      ctx.lineTo(385 * scale, height - 15 * scale);
+      ctx.setLineDash([6 * scale, 6 * scale]);
+      ctx.strokeStyle = `${colors.border}`;
+      ctx.lineWidth = 3 * scale;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Right section content
+      ctx.textAlign = 'center';
+
+      // RITUAL.NET
+      ctx.font = `bold ${9 * scale}px sans-serif`;
+      ctx.fillStyle = 'white';
+      ctx.fillText('RITUAL.NET', 480 * scale, 40 * scale);
+
+      // READY FOR TESTNET
+      const readyText = ['READY', 'FOR', 'TESTNET'];
+      const readyY = height / 2;
+      readyText.forEach((text, i) => {
+        ctx.font = `900 ${64 * scale}px 'Outfit', sans-serif`;
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, 480 * scale, readyY - 40 * scale + (i * 70 * scale));
       });
 
-      const link = document.createElement('a');
-      link.download = `golden-ticket-${profile?.username || 'monad'}.png`;
-      link.href = dataUrl;
-      link.click();
+      // (DO NOT LOSE)
+      ctx.font = `bold ${10 * scale}px 'Space Mono', monospace`;
+      ctx.fillText('(DO NOT LOSE)', 480 * scale, readyY + 180 * scale);
 
-      // Restore original display
-      document.querySelectorAll('.safari-logo-only').forEach(el => {
-        (el as HTMLElement).style.display = 'none';
-      });
-      document.querySelectorAll('.safari-logo-hidden').forEach(el => {
-        (el as HTMLElement).style.display = 'block';
-      });
+      // Bottom section
+      const bottomY = height - 24 * scale;
+
+      // Day text
+      ctx.textAlign = 'left';
+      ctx.fillText('Day', 400 * scale, bottomY);
+
+      // Divider
+      ctx.beginPath();
+      ctx.moveTo(445 * scale, bottomY - 7 * scale);
+      ctx.lineTo(545 * scale, bottomY - 7 * scale);
+      ctx.strokeStyle = '#1E1E1E';
+      ctx.lineWidth = 1 * scale;
+      ctx.stroke();
+
+      // 01 text
+      ctx.textAlign = 'right';
+      ctx.fillText('01', 565 * scale, bottomY);
+
+      ctx.restore();
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          throw new Error('Canvas to blob failed');
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `golden-ticket-${profile.username}.png`;
+        link.href = url;
+        link.click();
+
+        // Cleanup
+        URL.revokeObjectURL(url);
+        setIsLoading(false);
+      }, 'image/png');
+
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Download failed. Please try again or use a different browser.');
-
-      // Restore original display in case of error
-      document.querySelectorAll('.safari-logo-only').forEach(el => {
-        (el as HTMLElement).style.display = 'none';
-      });
-      document.querySelectorAll('.safari-logo-hidden').forEach(el => {
-        (el as HTMLElement).style.display = 'block';
-      });
-    } finally {
+      alert('Download failed. Please try again.');
       setIsLoading(false);
     }
   };
