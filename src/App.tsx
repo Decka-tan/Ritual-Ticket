@@ -935,13 +935,13 @@ export default function App() {
         className="fixed bottom-6 left-6 right-6 z-50 flex justify-center"
       >
         <div className="flex items-center gap-4">
-          <span className="text-white/30 text-xs font-medium">just for fun - by Decka-chan</span>
+          <span className="text-white/60 text-xs font-medium">just for fun - by Decka-chan</span>
           <div className="flex items-center gap-3">
             <a
               href="https://twitter.com/decka_chan"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/30 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
+              className="text-white/60 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
             >
               <Twitter className="w-3 h-3" />
             </a>
@@ -949,7 +949,7 @@ export default function App() {
               href="https://github.com/Decka-tan"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/30 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
+              className="text-white/60 hover:text-[#40FFAF] transition-colors hover:scale-110 transform"
             >
               <Github className="w-3 h-3" />
             </a>
