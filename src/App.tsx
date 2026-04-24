@@ -22,7 +22,7 @@ interface PassengerProfile {
   ticketId?: number;
 }
 
-type TicketColor = 'gold' | 'silver' | 'cream' | 'green' | 'pink' | 'cyan' | 'orange';
+type TicketColor = 'gold' | 'silver' | 'cream' | 'green' | 'pink' | 'cyan' | 'orange' | 'purple' | 'blue' | 'red';
 
 interface TicketColors {
   primary: string;
@@ -97,6 +97,33 @@ const ticketColorPalettes: Record<TicketColor, TicketColors> = {
     text: '#3D1A00',
     border: '#FF6600',
     gradient: 'linear-gradient(135deg, #FF7700 0%, #CC5500 100%)'
+  },
+  purple: {
+    primary: '#9B59B6',
+    secondary: '#A569C7',
+    dark: '#6C3483',
+    light: '#C39BD3',
+    text: '#3B1F4D',
+    border: '#7D3C98',
+    gradient: 'linear-gradient(135deg, #8E44AD 0%, #6C3483 100%)'
+  },
+  blue: {
+    primary: '#3B82F6',
+    secondary: '#60A5FA',
+    dark: '#1D4ED8',
+    light: '#93C5FD',
+    text: '#1E3A8A',
+    border: '#2563EB',
+    gradient: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)'
+  },
+  red: {
+    primary: '#EF4444',
+    secondary: '#F87171',
+    dark: '#B91C1C',
+    light: '#FCA5A5',
+    text: '#7F1D1D',
+    border: '#DC2626',
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)'
   }
 };
 
@@ -243,6 +270,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [transitionSpeed, setTransitionSpeed] = useState(1);
   const [ticketColor, setTicketColor] = useState<TicketColor>('gold');
+  const [savedColor, setSavedColor] = useState<TicketColor>('gold');
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showCustomizeWarning, setShowCustomizeWarning] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
@@ -264,6 +292,7 @@ export default function App() {
   };
 
   const confirmCustomize = () => {
+    setSavedColor(ticketColor);
     setHasSeenWarning(true);
     setShowCustomizeWarning(false);
     setIsCustomizing(true);
@@ -390,23 +419,20 @@ export default function App() {
       {/* SHARED REVEAL VIDEO BACKGROUND - persists across revealed and ticket states */}
       <AnimatePresence>
         {isRevealActive && (
-          <motion.div
+          <motion.video
             key="reveal-bg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-5"
-          >
-            <video
-              className="ritual-reveal-video"
-              autoPlay
-              loop
-              muted
-              playsInline
-              src="/reveal 2.mp4"
-            />
-          </motion.div>
+            className="ritual-reveal-video"
+            style={{ zIndex: 5 }}
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="/reveal%202.mp4"
+          />
         )}
       </AnimatePresence>
 
@@ -745,7 +771,7 @@ export default function App() {
                           <Download className="w-4 h-4" /><span>Save</span>
                         </button>
                         <button
-                          onClick={() => setIsCustomizing(false)}
+                          onClick={() => { setTicketColor(savedColor); setIsCustomizing(false); }}
                           className="px-5 py-2.5 rounded-xl border border-white/10 text-white/50 font-bold text-sm tracking-wide hover:text-white hover:border-white/30 transition-all flex items-center gap-2"
                         >
                           <ArrowLeft className="w-4 h-4" /><span>Back</span>
