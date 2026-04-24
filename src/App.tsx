@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
+// @ts-ignore - dom-to-image-more doesn't have types
+const domtoimage: any = require('dom-to-image-more');
+
 // Error Boundary Component
 class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode }) {
@@ -237,9 +240,7 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
             </div>
           </div>
           <div className="mt-2 min-w-0">
-            <div className="rounded-full border-[3px] border-[#FFB90A] px-3 py-1.5 bg-transparent backdrop-blur-sm inline-flex items-center max-w-[280px]" style={{ borderColor: 'var(--ticket-light)' }}>
-              <p className="font-medium text-sm leading-none tracking-tight ticket-username truncate whitespace-nowrap"> @{profile?.username || 'traveler'} </p>
-            </div>
+            <p className="font-medium text-sm leading-none tracking-tight ticket-username"> @{profile?.username || 'traveler'} </p>
           </div>
         </div>
         <div className="mb-6 pr-10">
@@ -396,15 +397,19 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      // Wait for images to load properly on Safari
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Wait for images to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const dataUrl = await toPng(ticketRef.current, {
-        cacheBust: true,
-        pixelRatio: 2, // Reduced for better Safari compatibility
-        backgroundColor: 'transparent',
+      // Use dom-to-image-more for better Safari compatibility
+      const dataUrl = await domtoimage.toPng(ticketRef.current, {
+        width: 575 * 2,
+        height: 320 * 2,
         quality: 1,
-        skipAutoScale: false,
+        bgcolor: 'transparent',
+        style: {
+          transform: 'scale(2)',
+          transformOrigin: 'top left'
+        }
       });
 
       const link = document.createElement('a');
@@ -413,7 +418,7 @@ export default function App() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Download failed. Please try again or use desktop browser.');
+      alert('Download failed. Please try screenshot instead.');
     } finally {
       setIsLoading(false);
     }
