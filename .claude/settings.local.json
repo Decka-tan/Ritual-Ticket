@@ -10,7 +10,8 @@
       "Bash(grep -n \"border-\\\\\\\\[#BAFF00\\\\\\\\]\" src/App.tsx)",
       "Bash(git pull *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

@@ -332,10 +332,25 @@ export default function App() {
     setIsCustomizing(true);
   };
 
-  const handleShare = () => {
-    const text = `I am ready for Ritual Testnet, what about yours?\n\nGot my ticket from @decka_chan: https://cards.decka.my.id/`;
+  const handleShare = async () => {
+    // Auto-download image first
+    if (ticketRef.current !== null) {
+      const dataUrl = await toPng(ticketRef.current, { cacheBust: true, pixelRatio: 3 });
+      const link = document.createElement('a');
+      link.download = `golden-ticket-${profile?.username || 'ritual'}.png`;
+      link.href = dataUrl;
+      link.click();
+    }
+
+    // Then open Twitter
+    const text = `I am ready for Ritual Testnet, what about yours?\n\nGot my ticket from @decka_chan: https://ticket.decka.my.id/`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
+
+    // Notify user to attach image
+    setTimeout(() => {
+      alert('🎫 Ticket image downloaded! Don\'t forget to attach it to your tweet for maximum impact! ✨');
+    }, 1000);
   };
 
   const fetchProfile = async (username: string) => {
@@ -648,10 +663,10 @@ export default function App() {
 
                 {/* Ticket zone - perfectly centered with zoom animation */}
                 <motion.div
-                  className="relative flex justify-center items-center reveal-zone-scale"
+                  className="relative flex justify-center items-center"
                   style={{ width: '320px', height: '160px' }}
                   initial={{ scale: 8 }}
-                  animate={{ scale: 2.5 }}
+                  animate={{ scale: window.innerWidth < 768 ? 1.2 : 2.5 }}
                   transition={{ duration: 1.2, ease: 'easeOut' }}
                 >
 
