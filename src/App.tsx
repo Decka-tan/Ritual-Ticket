@@ -666,7 +666,7 @@ export default function App() {
                   className="relative flex justify-center items-center"
                   style={{ width: '320px', height: '160px' }}
                   initial={{ scale: 8 }}
-                  animate={{ scale: window.innerWidth < 768 ? 1.2 : 2.5 }}
+                  animate={{ scale: window.innerWidth < 768 ? 1 : 2.5 }}
                   transition={{ duration: 1.2, ease: 'easeOut' }}
                 >
 
@@ -781,7 +781,8 @@ export default function App() {
                       key="main-buttons"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
                       className="flex items-center gap-3 flex-wrap justify-center"
                     >
                       {[
@@ -804,8 +805,8 @@ export default function App() {
                       key="customize-mode"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
+                      exit={{ opacity: 0, y: -30, scale: 0.9 }}
+                      transition={{ duration: 0.15 }}
                       className="flex flex-col items-center gap-5"
                     >
                       {/* Color swatches */}
