@@ -181,7 +181,7 @@ body {
   height: 100vh;
   object-fit: cover;
   opacity: 1;
-  filter: saturate(1.8) hue-rotate(-150deg) brightness(1.3) contrast(1.1);
+  filter: saturate(2.0) hue-rotate(-110deg) brightness(1.2) contrast(1.1);
   pointer-events: none;
   z-index: 1;
 }
@@ -194,17 +194,17 @@ body {
   height: 100vh;
   object-fit: cover;
   opacity: 1;
-  filter: saturate(1.8) hue-rotate(-150deg) brightness(1.3) contrast(1.1);
+  filter: saturate(2.0) hue-rotate(-110deg) brightness(1.2) contrast(1.1);
   pointer-events: none;
   z-index: 5;
 }
 
 .ritual-green-glow {
-  background: radial-gradient(circle, #BAFF00 0%, transparent 70%);
+  background: radial-gradient(circle, #40FFAF 0%, transparent 70%);
 }
 
 .ritual-green-text {
-  color: #BAFF00;
+  color: #40FFAF;
   text-shadow: 0 0 20px rgba(186, 255, 0, 0.5);
 }
 
@@ -220,3 +220,40 @@ body {
   pointer-events: none;
   z-index: 1;
 }
+
+/* Reveal Background Blend Masks */
+.reveal-mask-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: hard-light;
+  background: linear-gradient(to right, rgba(255,215,0,0.3), transparent);
+}
+
+.reveal-mask-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: hue;
+  background: linear-gradient(to left, rgba(186,255,0,0.2), transparent);
+}
+
+/* Mobile Responsive Scaling */
+@media (max-width: 768px) {
+  .mobile-ticket-scale {
+    transform: scale(0.65);
+    transform-origin: center center;
+  }
+
+  .reveal-zone-scale {
+    transform: scale(0.72);
+    transform-origin: center center;
+  }
+}
+

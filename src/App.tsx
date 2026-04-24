@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from 'react';
+import React, { useState, useRef, forwardRef, useEffect, Component } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
   X,
@@ -10,8 +10,42 @@ import {
   Palette,
   Share2,
   ArrowLeft,
+  Check,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+
+// Error Boundary Component
+class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-white">
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold text-[#40FFAF]">Something went wrong</h1>
+            <p className="text-white/60">Please refresh the page to continue</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-[#40FFAF] text-black rounded-full font-black hover:scale-105 transition-transform"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 // Types
 interface PassengerProfile {
@@ -199,8 +233,9 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, clipPath: `path("${ticketPath}")`, width: `${totalWidth}px`, ...ticketStyle, backgroundColor: colors.primary, borderBottomColor: colors.border }}
-      className="perspective-1000 relative h-[320px] flex group select-none shadow-[0_40px_80px_rgba(0,0,0,0.6)] rounded-3xl overflow-hidden border-b-6"
-    >
+      className="perspective-1000 relative h-[320px] flex group select-none rounded-3xl overflow-hidden border-b-6"
+      >
+      <div className="absolute -inset-4 rounded-3xl opacity-40 pointer-events-none" style={{ background: 'radial-gradient(circle at 30% 30%, rgba(0,0,0,0.3), transparent 70%)', filter: 'blur(20px)', zIndex: -1 }} />
       <motion.div
         className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-20 transition-opacity duration-300"
         style={{ background: `radial-gradient(circle at ${x.get() + 335}px ${y.get() + 160}px, rgba(255, 255, 255, 1), transparent 60%)` }}
@@ -313,20 +348,30 @@ export default function App() {
 
   const startTransition = () => {
     setStep('transitioning');
+  };
+
+  // Handle transition timing with cleanup
+  useEffect(() => {
+    if (step !== 'transitioning') return;
+
     const interval = setInterval(() => {
       setTransitionSpeed(prev => {
         if (prev >= 15) {
-          clearInterval(interval);
           return 15;
         }
         return prev + 1;
       });
     }, 150);
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setStep('revealed');
     }, 4000);
-  };
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [step]);
 
   const handleReveal = () => setStep('ticket');
 
@@ -340,13 +385,13 @@ export default function App() {
   };
 
   const isPortalActive = ['portal', 'login', 'confirmation', 'transitioning'].includes(step);
-  const isRevealActive = ['revealed', 'ticket'].includes(step);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] selection:bg-[#BAFF00]/30 flex flex-col font-sans overflow-hidden relative">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#0A0A0A] selection:bg-[#40FFAF]/30 flex flex-col font-sans overflow-hidden relative">
       {/* PAGE BACKGROUND — static green ambient glow, never changes */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vh] rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #BAFF00 0%, transparent 70%)', filter: 'blur(80px)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vh] rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #40FFAF 0%, transparent 70%)', filter: 'blur(80px)' }} />
       </div>
 
       {/* PERSISTENT RIPPLE BACKGROUND - FIXED */}
@@ -392,7 +437,7 @@ export default function App() {
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-full border border-[#BAFF00]/70 animate-ritual-ripple will-change-transform"
+                  className="rounded-full border border-[#40FFAF]/70 animate-ritual-ripple will-change-transform"
                   style={{
                     position: 'fixed',
                     left: '50%',
@@ -414,7 +459,7 @@ export default function App() {
 
       {/* SHARED REVEAL VIDEO BACKGROUND - persists across revealed and ticket states */}
       <AnimatePresence>
-        {isRevealActive && (
+        {(step === 'revealed' || step === 'ticket') && (
           <motion.div
             key="reveal-bg"
             initial={{ opacity: 0 }}
@@ -425,9 +470,13 @@ export default function App() {
           >
             <video
               autoPlay loop muted playsInline
-              src="/reveal%202.mp4"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(2.5) hue-rotate(-160deg) brightness(1.4) contrast(1.2)' }}
+              src="/reveal 2.mp4"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
+            {/* Left side mask - red to gold */}
+            <div className="reveal-mask-left" />
+            {/* Right side mask - current green */}
+            <div className="reveal-mask-right" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -490,7 +539,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setStep('login')}
-                className="mt-10 px-8 py-3 bg-[#BAFF00] text-black rounded-full font-black text-lg tracking-tight hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(186,255,0,0.3)]"
+                className="mt-10 px-8 py-3 bg-[#40FFAF] text-black rounded-full font-black text-lg tracking-tight hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(64,255,175,0.3)]"
               >
                 Sign in
               </button>
@@ -518,18 +567,18 @@ export default function App() {
                     <p className="text-white/40 text-sm">Input your username X to proceed</p>
                   </div>
                   <div className="w-full relative group">
-                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none"><span className="text-[#BAFF00] font-black font-mono">@</span></div>
+                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none"><span className="text-[#40FFAF] font-black font-mono">@</span></div>
                     <input
                       type="text" autoFocus value={handle} onChange={(e) => setHandle(e.target.value)}
                       placeholder="username"
                       onKeyDown={(e) => e.key === 'Enter' && handle && fetchProfile(handle)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-6 focus:outline-none focus:border-[#BAFF00]/50 transition-all text-white placeholder:text-white/10 font-mono text-lg"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-6 focus:outline-none focus:border-[#40FFAF]/50 transition-all text-white placeholder:text-white/10 font-mono text-lg"
                     />
                   </div>
                   <button
                     onClick={() => handle && fetchProfile(handle)}
                     disabled={isLoading || !handle}
-                    className="w-full bg-[#BAFF00] text-black py-5 rounded-2xl font-black text-xl tracking-tight hover:shadow-[0_0_50px_rgba(186,255,0,0.2)] disabled:opacity-50 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+                    className="w-full bg-[#40FFAF] text-black py-5 rounded-2xl font-black text-xl tracking-tight hover:shadow-[0_0_50px_rgba(64,255,175,0.2)] disabled:opacity-50 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
                   >
                     {isLoading ? <Loader2 className="animate-spin w-6 h-6" /> : (
                       <><span>Connecting</span><ArrowRight className="w-6 h-6" /></>
@@ -550,8 +599,8 @@ export default function App() {
             >
               <div className="w-full max-w-md flex flex-col items-center text-center space-y-10">
                 <div className="relative group">
-                  <div className="absolute inset-0 rounded-full bg-[#BAFF00]/20 blur-2xl group-hover:bg-[#BAFF00]/40 transition-all duration-500" />
-                  <div className="relative w-32 h-32 rounded-full border-4 border-[#BAFF00] overflow-hidden shadow-[0_0_50px_rgba(186,255,0,0.3)]">
+                  <div className="absolute inset-0 rounded-full bg-[#40FFAF]/20 blur-2xl group-hover:bg-[#40FFAF]/40 transition-all duration-500" />
+                  <div className="relative w-32 h-32 rounded-full border-4 border-[#40FFAF] overflow-hidden shadow-[0_0_50px_rgba(64,255,175,0.3)]">
                     {profile?.avatar ? (
                       <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" crossOrigin="anonymous" />
                     ) : (
@@ -563,11 +612,11 @@ export default function App() {
                 </div>
                 <div className="space-y-3">
                   <h3 className="text-4xl font-black text-white tracking-tight italic">{profile?.displayName}</h3>
-                  <p className="text-[#BAFF00] font-black text-lg">@{profile?.username}</p>
+                  <p className="text-[#40FFAF] font-black text-lg">@{profile?.username}</p>
                   <p className="text-white/40 font-bold pt-4 text-xl">Is this really your account?</p>
                 </div>
                 <div className="flex flex-col w-full gap-4 pt-6">
-                  <button onClick={startTransition} className="w-full bg-[#BAFF00] text-black py-6 rounded-2xl font-black text-2xl tracking-tighter hover:shadow-[0_0_60px_rgba(186,255,0,0.4)] transition-all active:scale-95">YES, PROCEED</button>
+                  <button onClick={startTransition} className="w-full bg-[#40FFAF] text-black py-6 rounded-2xl font-black text-2xl tracking-tighter hover:shadow-[0_0_60px_rgba(64,255,175,0.4)] transition-all active:scale-95">YES, PROCEED</button>
                   <button onClick={() => setStep('login')} className="w-full bg-white/5 text-white/40 py-4 rounded-2xl font-bold hover:text-white transition-all">No, re-input handle</button>
                 </div>
               </div>
@@ -599,7 +648,7 @@ export default function App() {
 
                 {/* Ticket zone - perfectly centered with zoom animation */}
                 <motion.div
-                  className="relative flex justify-center items-center"
+                  className="relative flex justify-center items-center reveal-zone-scale"
                   style={{ width: '320px', height: '160px' }}
                   initial={{ scale: 8 }}
                   animate={{ scale: 2.5 }}
@@ -639,7 +688,7 @@ export default function App() {
                     <motion.div
                       key={i}
                       className="absolute pointer-events-none z-20"
-                      style={{ top: s.top, left: s.left, width: s.size, height: s.size, filter: 'drop-shadow(0 0 4px #BAFF00)' }}
+                      style={{ top: s.top, left: s.left, width: s.size, height: s.size, filter: 'drop-shadow(0 0 4px #40FFAF)' }}
                       animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
                       transition={{ duration: s.dur, repeat: Infinity, delay: s.delay, ease: 'easeInOut' }}
                     >
@@ -706,7 +755,9 @@ export default function App() {
                   <img src="/ritual-wordmark.png" alt="Ritual" className="h-15 object-contain" />
                 </div>
 
-                <Ticket ref={ticketRef} profile={profile} ticketColor={ticketColor} />
+                <div className="mobile-ticket-scale">
+                  <Ticket ref={ticketRef} profile={profile} ticketColor={ticketColor} />
+                </div>
 
                 {/* Bottom section */}
                 <AnimatePresence mode="wait">
@@ -760,10 +811,10 @@ export default function App() {
                       {/* Customize sub-buttons */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={handleDownload}
+                          onClick={() => { setSavedColor(ticketColor); setIsCustomizing(false); }}
                           className="px-5 py-2.5 rounded-xl border border-white/10 text-white/50 font-bold text-sm tracking-wide hover:text-white hover:border-white/30 transition-all flex items-center gap-2"
                         >
-                          <Download className="w-4 h-4" /><span>Save</span>
+                          <Check className="w-4 h-4" /><span>Save</span>
                         </button>
                         <button
                           onClick={() => { setTicketColor(savedColor); setIsCustomizing(false); }}
@@ -823,5 +874,6 @@ export default function App() {
         </AnimatePresence>
       </main>
     </div>
+    </ErrorBoundary>
   );
 }

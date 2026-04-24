@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ipconfig /flushdns)",
+      "Bash(powershell -Command \"Clear-DnsClientCache\")",
+      "Bash(nslookup ticket.decka.my.id)",
+      "Bash(curl -I https://ticket.decka.my.id)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(grep -n \"border-\\\\\\\\[#BAFF00\\\\\\\\]\" src/App.tsx)",
+      "Bash(git pull *)"
+    ]
+  }
+}
