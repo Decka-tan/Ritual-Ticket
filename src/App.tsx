@@ -168,8 +168,8 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, clipPath: `path("${ticketPath}")`, width: `${totalWidth}px`, ...ticketStyle }}
-      className="perspective-1000 relative h-[320px] flex group select-none shadow-[0_40px_80px_rgba(0,0,0,0.6)] bg-[#FFD700] rounded-3xl overflow-hidden border-b-6 border-[#b17504]"
+      style={{ rotateX, rotateY, clipPath: `path("${ticketPath}")`, width: `${totalWidth}px`, ...ticketStyle, backgroundColor: colors.primary, borderBottomColor: colors.border }}
+      className="perspective-1000 relative h-[320px] flex group select-none shadow-[0_40px_80px_rgba(0,0,0,0.6)] rounded-3xl overflow-hidden border-b-6"
     >
       <motion.div
         className="absolute inset-0 z-30 pointer-events-none opacity-0 group-hover:opacity-20 transition-opacity duration-300"
