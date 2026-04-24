@@ -229,8 +229,8 @@ body {
   width: 50%;
   height: 100%;
   pointer-events: none;
-  mix-blend-mode: hard-light;
-  background: linear-gradient(to right, rgba(255,215,0,0.3), transparent);
+  mix-blend-mode: overlay;
+  background: linear-gradient(to right, rgba(255,215,0,0.25), transparent);
 }
 
 .reveal-mask-right {
@@ -240,8 +240,8 @@ body {
   width: 50%;
   height: 100%;
   pointer-events: none;
-  mix-blend-mode: hue;
-  background: linear-gradient(to left, rgba(186,255,0,0.2), transparent);
+  mix-blend-mode: color;
+  background: linear-gradient(to left, rgba(64,255,175,0.5), transparent);
 }
 
 /* Mobile Responsive Scaling */

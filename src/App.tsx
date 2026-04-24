@@ -160,33 +160,6 @@ const ticketColorPalettes: Record<TicketColor, TicketColors> = {
   }
 };
 
-// RESTORE: fetchTwitterProfile from Ritual Proxy
-const fetchTwitterProfile = async (username: string) => {
-  try {
-    const cleanUsername = username.replace('@', '');
-    const apiUrl = `https://ritual-twitter-proxy.artelamon.workers.dev/api/twitter/${cleanUsername}?t=${Date.now()}`;
-
-    const res = await fetch(apiUrl);
-    if (res.ok) {
-      const data = await res.json();
-      return {
-        avatar: data?.avatar || null,
-        displayName: data?.displayName || cleanUsername,
-        username: cleanUsername
-      };
-    }
-  } catch (error) {
-    console.warn('Profile fetch failed:', error);
-  }
-
-  const cleanUsername = username.replace('@', '');
-  return {
-    avatar: null,
-    displayName: cleanUsername,
-    username: cleanUsername
-  };
-};
-
 // Components
 const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ticketColor?: TicketColor }>(({ profile, ticketColor = 'gold' }, ref) => {
   const colors = ticketColorPalettes[ticketColor];
@@ -308,6 +281,7 @@ export default function App() {
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showCustomizeWarning, setShowCustomizeWarning] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const ticketRef = useRef<HTMLDivElement>(null);
 
   const resetToPortal = () => {
@@ -355,10 +329,37 @@ export default function App() {
 
   const fetchProfile = async (username: string) => {
     setIsLoading(true);
-    const fetchedProfile = await fetchTwitterProfile(username);
-    setProfile(fetchedProfile);
-    setIsLoading(false);
-    setStep('confirmation');
+    setProfileError(null);
+
+    try {
+      const cleanUsername = username.replace('@', '');
+      const apiUrl = `https://ritual-twitter-proxy.artelamon.workers.dev/api/twitter/${cleanUsername}?t=${Date.now()}`;
+
+      const res = await fetch(apiUrl);
+
+      if (!res.ok) {
+        throw new Error('Profile not found');
+      }
+
+      const data = await res.json();
+
+      if (!data || (!data.avatar && !data.displayName)) {
+        throw new Error('Profile not found');
+      }
+
+      const fetchedProfile = {
+        avatar: data?.avatar || null,
+        displayName: data?.displayName || cleanUsername,
+        username: cleanUsername
+      };
+
+      setProfile(fetchedProfile);
+      setIsLoading(false);
+      setStep('confirmation');
+    } catch (error) {
+      setIsLoading(false);
+      setProfileError('Username not found. Please check and try again.');
+    }
   };
 
   const startTransition = () => {
@@ -599,6 +600,20 @@ export default function App() {
                       <><span>Connecting</span><ArrowRight className="w-6 h-6" /></>
                     )}
                   </button>
+
+                  {/* Error message */}
+                  <AnimatePresence>
+                    {profileError && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="w-full bg-red-500/20 border border-red-500/50 rounded-xl p-4 text-center"
+                      >
+                        <p className="text-red-400 font-medium text-sm">{profileError}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             </motion.div>
