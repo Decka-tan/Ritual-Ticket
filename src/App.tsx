@@ -222,7 +222,7 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
           style={{ background: `radial-gradient(circle, var(--ticket-dark)40 0%, transparent 75%)` }}
         />
         <div className="absolute z-10 pointer-events-none" style={{ width: '800px', height: '1800px', left: '-620px', top: '-150px', background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 65%, transparent 100%)', transform: 'rotate(-55.6deg)', transformOrigin: '50% 0%', opacity: 1.0 }} />
-        <img src="/Logo_RItual_Black.png" alt="" className="absolute -left-40 top-1/2 -translate-y-1/2 w-[120%] opacity-[0.20] pointer-events-none z-20" style={{ height: '400%', objectFit: 'contain', mixBlendMode: 'multiply', filter: 'brightness(0) sepia(1) saturate(5) hue-rotate(15deg)' }} crossOrigin="anonymous" />
+        <div className="absolute -left-40 top-1/2 -translate-y-1/2 w-[120%] opacity-[0.20] pointer-events-none z-20" style={{ height: '400%', maskImage: 'url(/Logo_RItual_Black.png)', maskSize: 'contain', maskRepeat: 'no-repeat', maskPosition: 'center', background: 'var(--ticket-gradient)' }} />
         <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none flex items-center justify-center">
           <motion.div initial={{ opacity: 0.1, scale: 0.8 }} animate={{ opacity: [0.1, 0.3, 0.1], scale: [0.8, 1.2, 0.8] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="w-[500px] h-[500px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)' }} />
         </div>
@@ -237,7 +237,9 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
             </div>
           </div>
           <div className="mt-2 min-w-0">
-            <p className="font-medium text-sm leading-none tracking-tight ticket-username"> @{profile?.username || 'traveler'} </p>
+            <div className="inline-block border-[3px] border-[#FFB90A] rounded-full px-3 py-1.5 bg-transparent backdrop-blur-[0.5px]">
+              <p className="font-medium text-sm leading-none tracking-tight ticket-username"> @{profile?.username || 'traveler'} </p>
+            </div>
           </div>
         </div>
         <div className="mb-6 pr-10">
@@ -390,36 +392,28 @@ export default function App() {
   const handleReveal = () => setStep('ticket');
 
   const handleDownload = async () => {
-    if (!profile) return;
+    if (ticketRef.current === null) return;
     setIsLoading(true);
 
     try {
-      // Call Cloudflare Worker API
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
-      const response = await fetch(`${API_URL}/api/generate-ticket`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile: profile,
-          ticketColor: ticketColor,
-          username: profile.username
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate ticket');
-      }
-
-      const { imageUrl } = await response.json();
-
-      // Download the image
+      const dataUrl = await toPng(ticketRef.current, { cacheBust: true, pixelRatio: 3 });
       const link = document.createElement('a');
-      link.download = `golden-ticket-${profile.username}.png`;
-      link.href = imageUrl;
+      link.download = `golden-ticket-${profile?.username || 'ritual'}.png`;
+      link.href = dataUrl;
       link.click();
+
+      // Safari/iPhone compatibility notice
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
+      if (isSafari || isIOS) {
+        setTimeout(() => {
+          alert('If the downloaded image has issues, try taking a screenshot instead for better quality! 📱');
+        }, 1000);
+      }
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Download failed. Please try again.');
+      alert('Download failed. Please try again or take a screenshot.');
     } finally {
       setIsLoading(false);
     }
