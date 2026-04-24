@@ -789,11 +789,12 @@ export default function App() {
                       key="customize-mode"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
                       className="flex flex-col items-center gap-5"
                     >
                       {/* Color swatches */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-wrap max-w-[200px] sm:max-w-none justify-center">
                         {(Object.keys(ticketColorPalettes) as TicketColor[]).map((color) => (
                           <button
                             key={color}

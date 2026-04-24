@@ -252,7 +252,7 @@ body {
   }
 
   .reveal-zone-scale {
-    transform: scale(0.72);
+    transform: scale(0.5);
     transform-origin: center center;
   }
 }

@@ -8,7 +8,9 @@
       "Bash(npm run *)",
       "Bash(npm install *)",
       "Bash(grep -n \"border-\\\\\\\\[#BAFF00\\\\\\\\]\" src/App.tsx)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
