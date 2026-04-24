@@ -390,27 +390,36 @@ export default function App() {
   const handleReveal = () => setStep('ticket');
 
   const handleDownload = async () => {
-    if (ticketRef.current === null) return;
+    if (!profile) return;
     setIsLoading(true);
 
     try {
-      // Wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const dataUrl = await toPng(ticketRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: 'transparent',
-        quality: 1,
+      // Call server-side rendering API
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_URL}/api/generate-ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: profile,
+          ticketColor: ticketColor,
+          username: profile.username
+        })
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to generate ticket');
+      }
+
+      const { imageUrl } = await response.json();
+
+      // Download the image
       const link = document.createElement('a');
-      link.download = `golden-ticket-${profile?.username || 'monad'}.png`;
-      link.href = dataUrl;
+      link.download = `golden-ticket-${profile.username}.png`;
+      link.href = imageUrl;
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Download failed. Please try screenshot instead.');
+      alert('Download failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
