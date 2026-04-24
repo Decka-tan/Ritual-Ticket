@@ -13,19 +13,24 @@ let browser;
 
 async function getBrowser() {
   if (!browser) {
-    browser = await puppeteer.launch({
+    // Check if we're on VPS (Ubuntu) with snap Chromium
+    const fs = require('fs');
+    let launchOptions = {
       headless: 'new',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu'
+        '--disable-dev-shm-usage'
       ]
-    });
+    };
+
+    // Use snap Chromium on VPS if available
+    if (fs.existsSync('/snap/bin/chromium')) {
+      launchOptions.executablePath = '/snap/bin/chromium';
+      console.log('Using snap Chromium');
+    }
+
+    browser = await puppeteer.launch(launchOptions);
   }
   return browser;
 }
