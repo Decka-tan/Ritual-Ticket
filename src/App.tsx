@@ -14,9 +14,6 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
-// @ts-ignore - dom-to-image-more doesn't have types
-const domtoimage: any = require('dom-to-image-more');
-
 // Error Boundary Component
 class ErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode }) {
@@ -398,18 +395,13 @@ export default function App() {
 
     try {
       // Wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      // Use dom-to-image-more for better Safari compatibility
-      const dataUrl = await domtoimage.toPng(ticketRef.current, {
-        width: 575 * 2,
-        height: 320 * 2,
+      const dataUrl = await toPng(ticketRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: 'transparent',
         quality: 1,
-        bgcolor: 'transparent',
-        style: {
-          transform: 'scale(2)',
-          transformOrigin: 'top left'
-        }
       });
 
       const link = document.createElement('a');
