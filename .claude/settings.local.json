@@ -12,7 +12,10 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(git config *)",
+      "Bash(rm .gitmodules)",
+      "Bash(git rm *)"
     ]
   }
 }
