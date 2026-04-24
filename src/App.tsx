@@ -343,7 +343,7 @@ export default function App() {
     }
 
     // Then open Twitter
-    const text = `I am ready for Ritual Testnet, what about yours?\n\nGot my ticket from @decka_chan: https://ticket.decka.my.id/`;
+    const text = `I am ready for Ritual Testnet, what about yours?\n\nGot my ticket from @decka_chan: http://ticket.decka.my.id/`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
 
