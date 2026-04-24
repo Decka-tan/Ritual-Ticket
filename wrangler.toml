@@ -1,4 +1,4 @@
-name = "ritual-ticket-worker"
+name = "ritual-ticket"
 main = "src/generate-ticket.ts"
 compatibility_date = "2024-01-01"
 
