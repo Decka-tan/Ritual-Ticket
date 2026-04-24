@@ -1,41 +1,56 @@
-const express = require('express');
-const puppeteer = require('puppeteer');
-const cors = require('cors');
+// Cloudflare Worker for server-side ticket rendering
+export interface Env {
+  BROWSER_BINDING: any;
+}
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+interface TicketRequest {
+  profile: {
+    username: string;
+    displayName: string;
+    avatar?: string;
+  };
+  ticketColor?: string;
+}
 
-app.use(cors());
-app.use(express.json());
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    // CORS headers
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    };
 
-app.post('/api/generate-ticket', async (req, res) => {
-  const { profile, ticketColor, username } = req.body;
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
-  if (!profile) {
-    return res.status(400).json({ error: 'Profile data required' });
-  }
+    if (request.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+    }
 
-  let browser;
-  try {
-    // Launch browser
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-      ]
-    });
+    try {
+      const { profile }: TicketRequest = await request.json();
 
-    const page = await browser.newPage();
+      if (!profile) {
+        return new Response(JSON.stringify({ error: 'Profile data required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
 
-    // Set viewport for high quality
-    await page.setViewport({ width: 575, height: 320, deviceScaleFactor: 2 });
+      // Use Cloudflare Browser Rendering API
+      const browser = env.BROWSER_BINDING;
 
-    // Create ticket HTML
-    const ticketHTML = `
-      <!DOCTYPE html>
-      <html>
+      const page = await browser.newPage();
+
+      // Set viewport for high quality
+      await page.setViewport({ width: 575, height: 320, deviceScaleFactor: 2 });
+
+      // Create ticket HTML
+      const ticketHTML = `
+        <!DOCTYPE html>
+        <html>
         <head>
           <meta charset="UTF-8">
           <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -214,33 +229,31 @@ app.post('/api/generate-ticket', async (req, res) => {
             </div>
           </div>
         </body>
-      </html>
-    `;
+        </html>
+      `;
 
-    // Set content and wait for fonts
-    await page.setContent(ticketHTML, { waitUntil: 'networkidle0' });
+      // Set content and wait for fonts
+      await page.setContent(ticketHTML, { waitUntil: 'networkidle0' });
 
-    // Take screenshot
-    const screenshot = await page.screenshot({
-      type: 'png',
-      omitBackground: true
-    });
+      // Take screenshot
+      const screenshot = await page.screenshot({
+        type: 'png',
+        omitBackground: true
+      });
 
-    await browser.close();
+      // Convert to base64
+      const base64 = screenshot.toString('base64');
+      const imageUrl = `data:image/png;base64,${base64}`;
 
-    // Convert to base64
-    const base64 = screenshot.toString('base64');
-    const dataUrl = `data:image/png;base64,${base64}`;
+      return new Response(JSON.stringify({ imageUrl }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
 
-    res.json({ imageUrl: dataUrl });
-
-  } catch (error) {
-    console.error('Ticket generation error:', error);
-    if (browser) await browser.close();
-    res.status(500).json({ error: 'Failed to generate ticket' });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    } catch (error) {
+      return new Response(JSON.stringify({ error: 'Failed to generate ticket' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  },
+};

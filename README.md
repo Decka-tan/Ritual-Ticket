@@ -8,17 +8,16 @@ Golden Ticket generator for Ritual Testnet Day 1. A cinematic web experience tha
 - **Twitter Integration**: Fetch user profiles via Twitter proxy API
 - **Cinematic Transitions**: Smooth multi-stage reveal animations
 - **Customizable Tickets**: 10 color themes with real-time preview
-- **HD Download**: Export tickets as high-resolution PNG images
+- **Server-Side Download**: Perfect quality downloads via Cloudflare Workers + Puppeteer
 - **Responsive Design**: Mobile-optimized with adaptive scaling
 - **3D Interactions**: Interactive ticket with hover effects and parallax
 
 ## 🎨 Tech Stack
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
+- **Frontend**: React 18 with TypeScript + Vite
 - **Animations**: Framer Motion
 - **Styling**: Tailwind CSS
-- **Image Generation**: html-to-image
+- **Backend**: Cloudflare Workers + Browser Rendering API
 - **Icons**: Lucide React
 
 ## 🚀 Quick Start
@@ -27,27 +26,24 @@ Golden Ticket generator for Ritual Testnet Day 1. A cinematic web experience tha
 # Install dependencies
 npm install
 
-# Start development server
+# Start frontend dev server
 npm run dev
 
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+# Start Cloudflare Worker (for download functionality)
+npm run worker:dev
 ```
 
 ## 📁 Project Structure
 
 ```
 ritual-ticket/
-├── public/              # Static assets (videos, images, logos)
 ├── src/
-│   ├── App.tsx         # Main application component
-│   ├── index.css       # Global styles and animations
-│   └── main.tsx        # Application entry point
-├── index.html          # HTML template
-└── package.json        # Dependencies and scripts
+│   ├── App.tsx              # Main application component
+│   ├── generate-ticket.ts   # Cloudflare Worker for ticket generation
+│   └── index.css            # Global styles and animations
+├── public/                   # Static assets (videos, images, logos)
+├── wrangler.toml            # Cloudflare Workers configuration
+└── package.json             # Dependencies and scripts
 ```
 
 ## 🎯 User Flow
@@ -77,7 +73,7 @@ Users can customize their ticket with 10 color themes:
 
 - **Desktop**: Full-size ticket (575px × 320px)
 - **Mobile**: Scaled down to 65% for optimal viewing
-- **Reveal Animation**: Scaled to 72% on mobile devices
+- **Reveal Animation**: Scaled to 1.0 on mobile devices
 
 ## 🌐 API Integration
 
@@ -86,82 +82,58 @@ Uses Twitter proxy API for profile fetching:
 https://ritual-twitter-proxy.artelamon.workers.dev/api/twitter/{username}
 ```
 
-**Response format:**
-```json
-{
-  "avatar": "https://pbs.twimg.com/profile_images/...",
-  "displayName": "Display Name",
-  "username": "username"
-}
-```
-
 ## 🎬 Video Assets
 
-- **ritual-bg.mp4**: Portal background animation (1.8MB)
-- **ritual-enter.mp4**: Transition sequence (1.5MB)
-- **reveal 2.mp4**: Reveal background with split masking (4.6MB)
+- **ritual-bg.mp4**: Portal background animation
+- **ritual-enter.mp4**: Transition sequence
+- **reveal 2.mp4**: Reveal background with split masking
 
 ## 🎨 Color Scheme
 
 Primary accent color: `#40FFAF` (Ritual Green)
-- Portal buttons and highlights
-- Username displays
-- Success states
-- Focus indicators
+
+## 🚀 Deployment
+
+### Frontend (Vercel)
+
+```bash
+npm run build
+vercel --prod
+```
+
+### Cloudflare Worker (Browser Rendering)
+
+```bash
+# Deploy worker
+npm run worker:deploy
+```
+
+**Important:** Make sure to:
+1. Set up Browser Rendering API in Cloudflare dashboard
+2. Update `wrangler.toml` with your domain
+3. Set `VITE_API_URL` environment variable in Vercel to point to your worker URL
+
+### Environment Variables
+
+```bash
+# For local development
+VITE_API_URL=http://localhost:8787
+
+# For production (Vercel)
+VITE_API_URL=https://your-worker.your-subdomain.workers.dev
+```
 
 ## 🔧 Configuration
 
 ### Ticket Dimensions
-```typescript
-const TICKET_CONFIG = {
-  LEFT_WIDTH: 385,
-  RIGHT_WIDTH: 190,
-  TOTAL_WIDTH: 575,
-  HEIGHT: 320,
-  CUT_RADIUS: 16,
-};
-```
-
-### Animation Timing
-```typescript
-const TRANSITION_CONFIG = {
-  BASE_DURATION_MS: 4000,
-  SPEED_INCREMENT_MS: 150,
-  MAX_SPEED: 15,
-};
-```
+- Left section: 385px
+- Right section: 190px
+- Total: 575px × 320px
 
 ## 🐛 Known Issues
 
-- Memory leak in transition interval (needs useEffect cleanup)
-- Missing input validation for Twitter usernames
+- Safari/iPhone CSS mask-image limitations (mitigated with server-side rendering)
 - Large video assets impact initial load time
-- No error boundaries for runtime errors
-
-## 🔒 Security Considerations
-
-- Twitter proxy API should implement rate limiting
-- Username input needs validation (1-15 chars, alphanumeric + underscore)
-- API responses should be validated before use
-- Consider implementing CSP headers
-
-## 🚀 Deployment
-
-### Environment Variables
-None required - runs purely client-side
-
-### Build Output
-```bash
-npm run build
-# Outputs to: dist/
-```
-
-### Static Hosting
-Compatible with:
-- Netlify
-- Vercel
-- GitHub Pages
-- Any static file host
 
 ## 📝 License
 

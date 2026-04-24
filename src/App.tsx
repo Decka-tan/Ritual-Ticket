@@ -394,8 +394,8 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      // Call server-side rendering API
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      // Call Cloudflare Worker API
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
       const response = await fetch(`${API_URL}/api/generate-ticket`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
