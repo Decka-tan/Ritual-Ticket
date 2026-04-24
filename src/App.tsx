@@ -239,7 +239,7 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
             </div>
           </div>
           <div className="mt-2 min-w-0">
-            <div className="inline-block border-[3px] border-[#FFB90A] rounded-full px-3 py-1.5 bg-transparent backdrop-blur-[0.5px]">
+            <div className="inline-block border-[3px] rounded-full px-3 py-1.5 bg-transparent backdrop-blur-[0.5px]" style={{ borderColor: 'var(--ticket-light)' }}>
               <p className="font-medium text-sm leading-none tracking-tight ticket-username"> @{profile?.username || 'traveler'} </p>
             </div>
           </div>
