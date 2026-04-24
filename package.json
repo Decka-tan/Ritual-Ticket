@@ -14,11 +14,14 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
     "autoprefixer": "^10.5.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "framer-motion": "^12.38.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.546.0",
     "motion": "^12.38.0",
     "postcss": "^8.5.10",
+    "puppeteer": "^24.42.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "tailwindcss": "^4.2.4"
