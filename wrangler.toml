@@ -11,7 +11,3 @@ browser_bindings = [
 [vars]
 API_URL = "http://localhost:8787"
 
-# Routes for the worker
-[[routes]]
-pattern = "api/generate-ticket"
-zone_id = "5a4bb1b7d9c5f8a9d0c20a8b2c7b8c2" # decka-my.id zone ID
