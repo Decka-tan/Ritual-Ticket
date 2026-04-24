@@ -3,14 +3,15 @@ main = "src/generate-ticket.ts"
 compatibility_date = "2024-01-01"
 
 # Browser Rendering API binding
-[browser]
-binding = "BROWSER_BINDING"
+browser_bindings = [
+  { name = "BROWSER_BINDING", type = "browserstandard" }
+]
 
-# Environment variables for local development
+# Environment variables
 [vars]
 API_URL = "http://localhost:8787"
 
 # Routes for the worker
 [[routes]]
 pattern = "api/generate-ticket"
-zone_name = "your-domain.com" # Update this
+zone_id = "5a4bb1b7d9c5f8a9d0c20a8b2c7b8c2" # decka-my.id zone ID
