@@ -8,7 +8,6 @@ import {
   Ticket as TicketIcon,
   Loader2,
   Palette,
-  Bookmark,
   Share2,
   ArrowLeft,
 } from 'lucide-react';
@@ -298,13 +297,10 @@ export default function App() {
     setIsCustomizing(true);
   };
 
-  const handleShare = async () => {
-    const text = `I got my Golden Ticket to Ritual Testnet Day 1! @ritual_net`;
-    if (navigator.share) {
-      await navigator.share({ title: 'Ritual Testnet Ticket', text, url: window.location.href });
-    } else {
-      await navigator.clipboard.writeText(`${text} ${window.location.href}`);
-    }
+  const handleShare = () => {
+    const text = `I am ready for Ritual Testnet, what about yours?\n\nGot my ticket from @decka_chan: https://cards.decka.my.id/`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
   };
 
   const fetchProfile = async (username: string) => {
@@ -419,20 +415,20 @@ export default function App() {
       {/* SHARED REVEAL VIDEO BACKGROUND - persists across revealed and ticket states */}
       <AnimatePresence>
         {isRevealActive && (
-          <motion.video
+          <motion.div
             key="reveal-bg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="ritual-reveal-video"
-            style={{ zIndex: 5 }}
-            autoPlay
-            loop
-            muted
-            playsInline
-            src="/reveal%202.mp4"
-          />
+            style={{ position: 'fixed', inset: 0, zIndex: 5, pointerEvents: 'none' }}
+          >
+            <video
+              autoPlay loop muted playsInline
+              src="/reveal%202.mp4"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(2.5) hue-rotate(-160deg) brightness(1.4) contrast(1.2)' }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -723,8 +719,7 @@ export default function App() {
                       className="flex items-center gap-3 flex-wrap justify-center"
                     >
                       {[
-                        { label: 'Customize', icon: <Palette className="w-4 h-4" />, onClick: handleCustomizeClick },
-                        { label: 'Save',      icon: <Bookmark className="w-4 h-4" />, onClick: handleShare },
+                        { label: 'Customize', icon: <Palette className="w-4 h-4" />,  onClick: handleCustomizeClick },
                         { label: 'Share',     icon: <Share2 className="w-4 h-4" />,   onClick: handleShare },
                         { label: 'Download',  icon: <Download className="w-4 h-4" />, onClick: handleDownload },
                         { label: 'Back',      icon: <ArrowLeft className="w-4 h-4" />, onClick: () => setStep('revealed') },
