@@ -100,7 +100,7 @@ body {
 
 /* Custom Ticket Typography — all colors driven by CSS vars set per-theme in App.tsx */
 .ticket-text-gold {
-  background: linear-gradient(135deg, var(--ticket-light) 0%, var(--ticket-border) 100%);
+  background: linear-gradient(135deg, var(--ticket-dark) 0%, var(--ticket-text) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

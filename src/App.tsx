@@ -7,6 +7,10 @@ import {
   User,
   Ticket as TicketIcon,
   Loader2,
+  Palette,
+  Bookmark,
+  Share2,
+  ArrowLeft,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
@@ -239,11 +243,39 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [transitionSpeed, setTransitionSpeed] = useState(1);
   const [ticketColor, setTicketColor] = useState<TicketColor>('gold');
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [showCustomizeWarning, setShowCustomizeWarning] = useState(false);
+  const [hasSeenWarning, setHasSeenWarning] = useState(false);
   const ticketRef = useRef<HTMLDivElement>(null);
 
   const resetToPortal = () => {
     setTransitionSpeed(1);
+    setIsCustomizing(false);
+    setHasSeenWarning(false);
     setStep('portal');
+  };
+
+  const handleCustomizeClick = () => {
+    if (!hasSeenWarning) {
+      setShowCustomizeWarning(true);
+    } else {
+      setIsCustomizing(true);
+    }
+  };
+
+  const confirmCustomize = () => {
+    setHasSeenWarning(true);
+    setShowCustomizeWarning(false);
+    setIsCustomizing(true);
+  };
+
+  const handleShare = async () => {
+    const text = `I got my Golden Ticket to Ritual Testnet Day 1! @ritual_net`;
+    if (navigator.share) {
+      await navigator.share({ title: 'Ritual Testnet Ticket', text, url: window.location.href });
+    } else {
+      await navigator.clipboard.writeText(`${text} ${window.location.href}`);
+    }
   };
 
   const fetchProfile = async (username: string) => {
@@ -647,48 +679,124 @@ export default function App() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               className="fixed inset-0 z-10"
             >
-              {/* Content Overlay */}
               <div className="relative z-20 h-screen flex flex-col items-center justify-center gap-8 px-4">
-                {/* Header - Ritual Wordmark */}
                 <div className="absolute top-8 left-0 right-0 flex justify-center">
                   <img src="/ritual-wordmark.png" alt="Ritual" className="h-15 object-contain" />
                 </div>
 
                 <Ticket ref={ticketRef} profile={profile} ticketColor={ticketColor} />
 
-                {/* Color Picker */}
-                <div className="flex flex-wrap justify-center gap-3 mb-8">
-                  {(Object.keys(ticketColorPalettes) as TicketColor[]).map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setTicketColor(color)}
-                      className={`w-12 h-12 rounded-full border-4 transition-all ${
-                        ticketColor === color
-                          ? 'scale-110 shadow-lg'
-                          : 'opacity-60 hover:opacity-100 hover:scale-105'
-                      }`}
-                      style={{
-                        backgroundColor: ticketColorPalettes[color].primary,
-                        borderColor: ticketColor === color ? ticketColorPalettes[color].border : 'transparent'
-                      }}
-                      title={color.charAt(0).toUpperCase() + color.slice(1)}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-6">
-                  <button onClick={handleDownload} className="px-10 py-5 bg-white/5 border border-white/20 rounded-2xl flex items-center gap-3 hover:bg-[#FFD700]/10 hover:border-[#FFD700]/40 transition-all font-bold group backdrop-blur-md text-white">
-                    <Download className="w-5 h-5 text-white/60 group-hover:text-[#FFD700]" />
-                    <span>SAVE ARTIFACT</span>
-                  </button>
-                  <button onClick={() => setStep('revealed')} className="px-10 py-5 bg-transparent border border-white/10 rounded-2xl flex items-center gap-3 hover:bg-white/5 transition-all text-white/40 hover:text-white font-bold">
-                    <span>BACK</span>
-                  </button>
-                  <button onClick={() => resetToPortal()} className="px-10 py-5 bg-transparent border border-white/10 rounded-2xl flex items-center gap-3 hover:bg-white/5 transition-all text-white/40 hover:text-white font-bold">
-                    <span>FORGE ANOTHER</span>
-                  </button>
-                </div>
+                {/* Bottom section */}
+                <AnimatePresence mode="wait">
+                  {!isCustomizing ? (
+                    <motion.div
+                      key="main-buttons"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className="flex items-center gap-3 flex-wrap justify-center"
+                    >
+                      {[
+                        { label: 'Customize', icon: <Palette className="w-4 h-4" />, onClick: handleCustomizeClick },
+                        { label: 'Save',      icon: <Bookmark className="w-4 h-4" />, onClick: handleShare },
+                        { label: 'Share',     icon: <Share2 className="w-4 h-4" />,   onClick: handleShare },
+                        { label: 'Download',  icon: <Download className="w-4 h-4" />, onClick: handleDownload },
+                        { label: 'Back',      icon: <ArrowLeft className="w-4 h-4" />, onClick: () => setStep('revealed') },
+                      ].map(({ label, icon, onClick }) => (
+                        <button
+                          key={label}
+                          onClick={onClick}
+                          className="px-5 py-2.5 rounded-xl border border-white/10 text-white/50 font-bold text-sm tracking-wide hover:text-white hover:border-white/30 transition-all flex items-center gap-2"
+                        >
+                          {icon}<span>{label}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="customize-mode"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className="flex flex-col items-center gap-5"
+                    >
+                      {/* Color swatches */}
+                      <div className="flex items-center gap-3">
+                        {(Object.keys(ticketColorPalettes) as TicketColor[]).map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setTicketColor(color)}
+                            className="relative w-9 h-9 rounded-full transition-transform hover:scale-110 active:scale-95"
+                            style={{ backgroundColor: ticketColorPalettes[color].primary }}
+                            title={color.charAt(0).toUpperCase() + color.slice(1)}
+                          >
+                            {ticketColor === color && (
+                              <span className="absolute inset-0 rounded-full ring-2 ring-offset-2 ring-offset-black ring-white pointer-events-none" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Customize sub-buttons */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={handleDownload}
+                          className="px-5 py-2.5 rounded-xl border border-white/10 text-white/50 font-bold text-sm tracking-wide hover:text-white hover:border-white/30 transition-all flex items-center gap-2"
+                        >
+                          <Download className="w-4 h-4" /><span>Save</span>
+                        </button>
+                        <button
+                          onClick={() => setIsCustomizing(false)}
+                          className="px-5 py-2.5 rounded-xl border border-white/10 text-white/50 font-bold text-sm tracking-wide hover:text-white hover:border-white/30 transition-all flex items-center gap-2"
+                        >
+                          <ArrowLeft className="w-4 h-4" /><span>Back</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              {/* Customize Warning Modal */}
+              <AnimatePresence>
+                {showCustomizeWarning && (
+                  <motion.div
+                    key="warning"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+                  >
+                    <motion.div
+                      initial={{ scale: 0.9, y: 16 }}
+                      animate={{ scale: 1, y: 0 }}
+                      exit={{ scale: 0.9, y: 16 }}
+                      className="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center space-y-5"
+                    >
+                      <div className="text-5xl">🎫</div>
+                      <div className="space-y-2">
+                        <h3 className="text-white font-black text-xl tracking-tight">Heads up</h3>
+                        <p className="text-white/50 text-sm leading-relaxed">
+                          Once you customize your ticket, your Golden Ticket won't be gold anymore. It's gone. Forever. Well, unless you pick gold again lol
+                        </p>
+                      </div>
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => setShowCustomizeWarning(false)}
+                          className="flex-1 py-3 rounded-xl border border-white/10 text-white/40 font-bold text-sm hover:text-white hover:border-white/30 transition-all"
+                        >
+                          Keep gold
+                        </button>
+                        <button
+                          onClick={confirmCustomize}
+                          className="flex-1 py-3 rounded-xl bg-white text-black font-black text-sm hover:bg-white/90 transition-all"
+                        >
+                          Let's go →
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
