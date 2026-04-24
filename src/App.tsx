@@ -502,7 +502,7 @@ export default function App() {
         await new Promise<void>((resolve) => {
           avatarImg.onload = () => resolve();
           avatarImg.onerror = () => resolve(); // Continue even if avatar fails
-          avatarImg.src = profile.avatar;
+          avatarImg.src = profile.avatar || '';
         });
         ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize);
       } else {
