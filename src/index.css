@@ -257,12 +257,3 @@ body {
   }
 }
 
-/* Safari/iOS Download Fix - Show img elements only during capture */
-.safari-logo-only {
-  display: none !important;
-}
-
-.safari-logo-hidden {
-  display: block !important;
-}
-

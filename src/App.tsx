@@ -222,8 +222,7 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
           style={{ background: `radial-gradient(circle, var(--ticket-dark)40 0%, transparent 75%)` }}
         />
         <div className="absolute z-10 pointer-events-none" style={{ width: '800px', height: '1800px', left: '-620px', top: '-150px', background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 65%, transparent 100%)', transform: 'rotate(-55.6deg)', transformOrigin: '50% 0%', opacity: 1.0 }} />
-        <div className="absolute -left-40 top-1/2 -translate-y-1/2 w-[120%] opacity-[0.20] pointer-events-none z-20 safari-logo-hidden" style={{ height: '400%', maskImage: 'url(/Logo_RItual_Black.png)', maskSize: 'contain', maskRepeat: 'no-repeat', maskPosition: 'center', background: 'var(--ticket-gradient)' }} />
-        <img src="/Logo_RItual_Black.png" alt="" className="absolute -left-40 top-1/2 -translate-y-1/2 w-[120%] opacity-[0.20] pointer-events-none z-20 safari-logo-only" style={{ height: '400%', objectFit: 'contain', mixBlendMode: 'multiply' }} crossOrigin="anonymous" />
+        <img src="/Logo_RItual_Black.png" alt="" className="absolute -left-40 top-1/2 -translate-y-1/2 w-[120%] opacity-[0.20] pointer-events-none z-20" style={{ height: '400%', objectFit: 'contain', mixBlendMode: 'multiply', filter: 'brightness(0) sepia(1) saturate(5) hue-rotate(15deg)' }} crossOrigin="anonymous" />
         <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none flex items-center justify-center">
           <motion.div initial={{ opacity: 0.1, scale: 0.8 }} animate={{ opacity: [0.1, 0.3, 0.1], scale: [0.8, 1.2, 0.8] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="w-[500px] h-[500px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)' }} />
         </div>
@@ -248,8 +247,7 @@ const Ticket = forwardRef<HTMLDivElement, { profile: PassengerProfile | null; ti
           <h2 className="text-[2.8rem] font-black tracking-tighter leading-[1.02] mb-1 ticket-display-name overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', maxHeight: '5.7rem' }}> {profile?.displayName || 'Traveler Name'} </h2>
         </div>
         <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between h-5 text-[#4E2F10]">
-          <div className="safari-logo-hidden" style={{ maskImage: 'url(/Logo_RItual_Black.png)', maskSize: 'contain', maskRepeat: 'no-repeat', background: 'var(--ticket-gradient)', width: '24px', height: '14px' }} />
-          <img src="/Logo_RItual_Black.png" alt="" className="safari-logo-only" style={{ width: '24px', height: '14px', objectFit: 'contain', filter: 'brightness(0.3) sepia(1) saturate(3) hue-rotate(-10deg)' }} crossOrigin="anonymous" />
+          <img src="/Logo_RItual_Black.png" alt="" style={{ width: '24px', height: '14px', objectFit: 'contain', filter: 'brightness(0) sepia(1) saturate(5) hue-rotate(15deg)' }} crossOrigin="anonymous" />
           <div className="flex-grow h-[1px] bg-gradient-to-r from-[#1E1E1E] to-[#B17714] opacity-50 mx-3" style={{ background: 'linear-gradient(to right, #1E1E1E, var(--ticket-border))' }} />
           <span className="text-[10px] font-black uppercase tracking-[0.4em] ticket-text-metadata font-mono">TESTNET</span>
         </div>
@@ -398,13 +396,15 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      // Wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for images to load properly on Safari
+      await new Promise(resolve => setTimeout(resolve, 800));
 
       const dataUrl = await toPng(ticketRef.current, {
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: 2, // Reduced for better Safari compatibility
         backgroundColor: 'transparent',
+        quality: 1,
+        skipAutoScale: false,
       });
 
       const link = document.createElement('a');
@@ -413,7 +413,7 @@ export default function App() {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-      alert('Download failed. Please try again.');
+      alert('Download failed. Please try again or use desktop browser.');
     } finally {
       setIsLoading(false);
     }
